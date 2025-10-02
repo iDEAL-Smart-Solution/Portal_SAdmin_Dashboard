@@ -1,46 +1,53 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useAuthStore } from './stores/auth-store'
+import LoginPage from './pages/auth/LoginPage'
+import Layout from './components/layout/Layout'
+import StaffManagement from './pages/staff/StaffManagement'
+import StudentManagement from './pages/student/StudentManagement'
+import AcademicDataManagement from './pages/academic/AcademicDataManagement'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { isAuthenticated } = useAuthStore()
+  const [currentModule, setCurrentModule] = useState<'staff' | 'student' | 'academic' | 'schools'>('staff')
+
+  // Show login page if not authenticated
+  if (!isAuthenticated) {
+    return <LoginPage onLoginSuccess={() => setCurrentModule('staff')} />
+  }
+
+  const handleModuleChange = (module: string) => {
+    setCurrentModule(module as 'staff' | 'student' | 'academic' | 'schools')
+  }
+
+  const renderModuleContent = () => {
+    switch (currentModule) {
+      case 'staff':
+        return <StaffManagement onBack={() => {}} />
+      case 'student':
+        return <StudentManagement onBack={() => {}} />
+      case 'academic':
+        return <AcademicDataManagement onBack={() => {}} />
+      case 'schools':
+        return (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+              <h3 className="mt-2 text-sm font-medium text-gray-900">School Management</h3>
+              <p className="mt-1 text-sm text-gray-500">Coming soon - Manage multiple schools</p>
+            </div>
+          </div>
+        )
+      default:
+        return <StaffManagement onBack={() => {}} />
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto py-16 px-4">
-        <div className="text-center">
-          <div className="flex justify-center space-x-8 mb-8">
-            <a href="https://vitejs.dev" target="_blank" rel="noopener noreferrer">
-              <img src={viteLogo} className="h-24 w-24 hover:opacity-80 transition-opacity" alt="Vite logo" />
-            </a>
-            <a href="https://react.dev" target="_blank" rel="noopener noreferrer">
-              <img src={reactLogo} className="h-24 w-24 hover:opacity-80 transition-opacity animate-spin" alt="React logo" />
-            </a>
-          </div>
-          
-          <h1 className="text-4xl font-bold text-gray-900 mb-8">
-            Portal Dev Dashboard
-          </h1>
-          
-          <p className="text-lg text-gray-600 mb-8">
-            Vite + React + TypeScript + Tailwind CSS
-          </p>
-          
-          <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-            <button
-              onClick={() => setCount((count) => count + 1)}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
-            >
-              Count is {count}
-            </button>
-          </div>
-          
-          <p className="text-sm text-gray-500">
-            Edit <code className="bg-gray-100 px-2 py-1 rounded text-sm font-mono">src/App.tsx</code> and save to test HMR
-          </p>
-        </div>
-      </div>
-    </div>
+    <Layout activeModule={currentModule} onModuleChange={handleModuleChange}>
+      {renderModuleContent()}
+    </Layout>
   )
 }
 
