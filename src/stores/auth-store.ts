@@ -1,67 +1,102 @@
 import { create } from 'zustand';
-import { LoginRequest, LoginResponse, AuthState } from '../types/auth';
+import { LoginResponse, AuthState, LoginApiResponse } from '../types/auth';
+import axiosInstance from '../lib/axios';
 
 interface AuthStore extends AuthState {
   // Actions
-  login: (credentials: LoginRequest) => Promise<LoginResponse>;
+  login: (credentials: { UIN: string; password: string }) => Promise<LoginResponse>;
   logout: () => void;
   clearError: () => void;
 }
 
-// Mock credentials
-const MOCK_CREDENTIALS = {
-  UIN: 'DEV/iDL/0001',
-  password: 'passer'
+// Initialize state from sessionStorage
+const initializeAuth = () => {
+  const token = sessionStorage.getItem('token');
+  const userStr = sessionStorage.getItem('user');
+  
+  if (token && userStr) {
+    try {
+      const user = JSON.parse(userStr);
+      return {
+        isAuthenticated: true,
+        user,
+        isLoading: false,
+        error: null
+      };
+    } catch {
+      // If parsing fails, clear invalid data
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('user');
+      sessionStorage.removeItem('SchoolId');
+    }
+  }
+  
+  return {
+    isAuthenticated: false,
+    user: null,
+    isLoading: false,
+    error: null
+  };
 };
 
-export const useAuthStore = create<AuthStore>((set, get) => ({
-  // Initial state
-  isAuthenticated: false,
-  user: null,
-  isLoading: false,
-  error: null,
+export const useAuthStore = create<AuthStore>((set) => ({
+  // Initial state from sessionStorage
+  ...initializeAuth(),
 
   // Actions
-  login: async (credentials: LoginRequest) => {
+  login: async (credentials: { UIN: string; password: string }) => {
     set({ isLoading: true, error: null });
     
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Validate credentials
-      if (credentials.UIN === MOCK_CREDENTIALS.UIN && credentials.password === MOCK_CREDENTIALS.password) {
-        const user = {
-          UIN: credentials.UIN,
-          name: 'System Administrator',
-          role: 'admin'
-        };
-        
+      // Call the real API endpoint
+      const response = await axiosInstance.post<LoginApiResponse>('/Auth/login', {
+        UIN: credentials.UIN,
+        Password: credentials.password
+      });
+
+      const { success, message, data } = response.data;
+
+      if (success && data) {
+        const { user, token } = data;
+
+        // Store token, user, and SchoolId in sessionStorage
+        sessionStorage.setItem('token', token);
+        sessionStorage.setItem('user', JSON.stringify(user));
+        sessionStorage.setItem('SchoolId', user.schoolId);
+
         set({ 
           isAuthenticated: true, 
-          user, 
+          user: user, 
           isLoading: false 
         });
         
         return {
           success: true,
-          message: 'Login successful',
-          user
+          message,
+          user: user,
+          token: token
         };
       } else {
-        const errorMessage = 'Invalid UIN or password';
         set({ 
-          error: errorMessage, 
+          error: message, 
           isLoading: false 
         });
         
         return {
           success: false,
-          message: errorMessage
+          message
         };
       }
-    } catch (error) {
-      const errorMessage = 'Login failed. Please try again.';
+    } catch (error: any) {
+      let errorMessage = 'Login failed. Please try again.';
+      
+      // Handle different error responses from the API
+      if (error.response) {
+        errorMessage = error.response.data?.message || errorMessage;
+      } else if (error.request) {
+        errorMessage = 'Unable to connect to the server. Please check your connection.';
+      }
+
       set({ 
         error: errorMessage, 
         isLoading: false 
@@ -75,6 +110,11 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
 
   logout: () => {
+    // Clear sessionStorage
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
+    sessionStorage.removeItem('SchoolId');
+
     set({ 
       isAuthenticated: false, 
       user: null, 
