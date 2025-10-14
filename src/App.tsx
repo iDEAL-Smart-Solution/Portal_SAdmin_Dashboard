@@ -1,41 +1,55 @@
-import { useState } from 'react'
-import { useAuthStore } from './stores/auth-store'
-import LoginPage from './pages/auth/LoginPage'
-import Layout from './components/layout/Layout'
-import StaffManagement from './pages/staff/StaffManagement'
-import StudentManagement from './pages/student/StudentManagement'
-import AcademicDataManagement from './pages/academic/AcademicDataManagement'
-import ClassListPage from './pages/academic/classes/ClassListPage' // ✅ New Page Import
+import { useState } from "react";
+import { useAuthStore } from "./stores/auth-store";
+import LoginPage from "./pages/auth/LoginPage";
+import Layout from "./components/layout/Layout";
+
+import StaffManagement from "./pages/staff/StaffManagement";
+import StudentManagement from "./pages/student/StudentManagement";
+import AcademicDataManagement from "./pages/academic/AcademicDataManagement";
+import ClassListPage from "./pages/academic/classes/ClassListPage";
+
+import SubjectList from "./pages/subjects/SubjectList";
+import SubjectDetailPage from "@/pages/subjects/SubjectDetailPage";
 
 function App() {
-  const { isAuthenticated } = useAuthStore()
+  const { isAuthenticated } = useAuthStore();
   const [currentModule, setCurrentModule] = useState<
-    'staff' | 'student' | 'academic' | 'schools' | 'class'
-  >('staff')
+    "staff" | "student" | "academic" | "schools" | "class" | "subjects"
+  >("staff");
 
   // Show login page if not authenticated
   if (!isAuthenticated) {
-    return <LoginPage onLoginSuccess={() => setCurrentModule('staff')} />
+    return <LoginPage onLoginSuccess={() => setCurrentModule("staff")} />;
   }
 
   const handleModuleChange = (module: string) => {
     setCurrentModule(
-      module as 'staff' | 'student' | 'academic' | 'schools' | 'class'
-    )
-  }
+      module as
+      | "staff"
+      | "student"
+      | "academic"
+      | "schools"
+      | "class"
+      | "subjects"
+    );
+  };
 
   const renderModuleContent = () => {
     switch (currentModule) {
-      case 'staff':
-        return <StaffManagement onBack={() => {}} />
-      case 'student':
-        return <StudentManagement onBack={() => {}} />
-      case 'academic':
-        return <AcademicDataManagement onBack={() => {}} />
-      case 'class':
-        //  Newly added route
-        return <ClassListPage />
-      case 'schools':
+      case "staff":
+        return <StaffManagement onBack={() => { }} />;
+      case "student":
+        return <StudentManagement onBack={() => { }} />;
+      case "academic":
+        return <AcademicDataManagement onBack={() => { }} />;
+      case "class":
+        return <ClassListPage />;
+      case "subjects":
+        // ✅ Load the new Manage Subjects module
+        return <SubjectList />;
+    
+
+      case "schools":
         return (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
@@ -60,17 +74,17 @@ function App() {
               </p>
             </div>
           </div>
-        )
+        );
       default:
-        return <StaffManagement onBack={() => {}} />
+        return <StaffManagement onBack={() => { }} />;
     }
-  }
+  };
 
   return (
     <Layout activeModule={currentModule} onModuleChange={handleModuleChange}>
       {renderModuleContent()}
     </Layout>
-  )
+  );
 }
 
-export default App
+export default App;
