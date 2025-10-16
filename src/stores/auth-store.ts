@@ -7,6 +7,7 @@ interface AuthStore extends AuthState {
   login: (credentials: { UIN: string; password: string }) => Promise<LoginResponse>;
   logout: () => void;
   clearError: () => void;
+  isAdmin: () => boolean;
 }
 
 // Initialize state from sessionStorage
@@ -17,6 +18,22 @@ const initializeAuth = () => {
   if (token && userStr) {
     try {
       const user = JSON.parse(userStr);
+      
+      // Check if user role is Admin
+      if (user.role !== 'Admin') {
+        // Clear invalid data for non-Admin users
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
+        sessionStorage.removeItem('SchoolId');
+        
+        return {
+          isAuthenticated: false,
+          user: null,
+          isLoading: false,
+          error: 'Access denied. Only School Admin accounts can access this dashboard. Please login with an appropriate School Admin account.'
+        };
+      }
+      
       return {
         isAuthenticated: true,
         user,
@@ -59,6 +76,19 @@ export const useAuthStore = create<AuthStore>((set) => ({
       if (success && data) {
         const { user, token } = data;
 
+        // Check if user role is Admin
+        if (user.role !== 'Admin') {
+          set({ 
+            error: 'Access denied. Only School Admin accounts can access this dashboard. Please login with an appropriate School Admin account.',
+            isLoading: false 
+          });
+          
+          return {
+            success: false,
+            message: 'Access denied. Only School Admin accounts can access this dashboard. Please login with an appropriate School Admin account.'
+          };
+        }
+
         // Store token, user, and SchoolId in sessionStorage
         sessionStorage.setItem('token', token);
         sessionStorage.setItem('user', JSON.stringify(user));
@@ -92,9 +122,27 @@ export const useAuthStore = create<AuthStore>((set) => ({
       
       // Handle different error responses from the API
       if (error.response) {
-        errorMessage = error.response.data?.message || errorMessage;
+        const responseData = error.response.data;
+        
+        // Priority order: details > message > fallback
+        // This matches the backend error structure where details contains the specific error
+        if (responseData?.details) {
+          // Use the details field as the primary error message (most specific)
+          // Example: { message: "An unexpected error occurred.", details: "Incorrect UIN" }
+          errorMessage = responseData.details;
+        } else if (responseData?.message) {
+          // Fallback to message field if details is not available
+          errorMessage = responseData.message;
+        } else if (responseData) {
+          // If response data exists but no specific fields, use the data itself
+          errorMessage = typeof responseData === 'string' ? responseData : JSON.stringify(responseData);
+        }
       } else if (error.request) {
+        // Network error - server unreachable
         errorMessage = 'Unable to connect to the server. Please check your connection.';
+      } else if (error.message) {
+        // Handle cases where error has a message property (like our custom axios interceptor errors)
+        errorMessage = error.message;
       }
 
       set({ 
@@ -124,5 +172,10 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
   clearError: () => {
     set({ error: null });
+  },
+
+  isAdmin: () => {
+    const { user } = useAuthStore.getState();
+    return user?.role === 'Admin';
   }
 }));

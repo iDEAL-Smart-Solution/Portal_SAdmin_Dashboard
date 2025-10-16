@@ -4,8 +4,10 @@ import {
   UpdateStaffRequest, 
   GetSingleStaffResponse, 
   GetManyStaffResponse,
-  StaffFormData 
+  StaffFormData,
+  StaffApiResponse
 } from '../types/staff';
+import axiosInstance from '../lib/axios';
 
 interface StaffState {
   // Staff list
@@ -15,7 +17,7 @@ interface StaffState {
   error: string | null;
 
   // Actions
-  fetchStaffList: () => Promise<void>;
+  fetchStaffList: (searchParam?: string) => Promise<void>;
   fetchStaffById: (id: string) => Promise<void>;
   createStaff: (staffData: CreateStaffRequest) => Promise<void>;
   updateStaff: (id: string, staffData: UpdateStaffRequest) => Promise<void>;
@@ -24,147 +26,6 @@ interface StaffState {
   clearSelectedStaff: () => void;
 }
 
-// Mock data for development
-const mockStaffList: GetManyStaffResponse[] = [
-  {
-    id: '1',
-    fullName: 'John Smith',
-    email: 'john.smith@idealschool.edu',
-    gender: 'male',
-    UIN: 'STF001',
-    profilePicture: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-    subjectCodes: ['MATH101', 'PHYS201'],
-    schoolId: 'school-1',
-    userName: 'johnsmith',
-    createdAt: '2024-01-15T10:30:00Z'
-  },
-  {
-    id: '2',
-    fullName: 'Sarah Johnson',
-    email: 'sarah.johnson@idealschool.edu',
-    gender: 'female',
-    UIN: 'STF002',
-    profilePicture: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
-    subjectCodes: ['ENG101', 'LIT201'],
-    schoolId: 'school-1',
-    userName: 'sarahjohnson',
-    createdAt: '2024-01-16T14:20:00Z'
-  },
-  {
-    id: '3',
-    fullName: 'Michael Brown',
-    email: 'michael.brown@idealschool.edu',
-    gender: 'male',
-    UIN: 'STF003',
-    profilePicture: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-    subjectCodes: ['SCI101', 'BIO201'],
-    schoolId: 'school-1',
-    userName: 'michaelbrown',
-    createdAt: '2024-01-17T09:15:00Z'
-  },
-  {
-    id: '4',
-    fullName: 'Emily Davis',
-    email: 'emily.davis@idealschool.edu',
-    gender: 'female',
-    UIN: 'STF004',
-    profilePicture: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
-    subjectCodes: ['HIST101', 'GEO201'],
-    schoolId: 'school-1',
-    userName: 'emilydavis',
-    createdAt: '2024-01-18T11:45:00Z'
-  },
-  {
-    id: '5',
-    fullName: 'David Wilson',
-    email: 'david.wilson@idealschool.edu',
-    gender: 'male',
-    UIN: 'STF005',
-    profilePicture: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
-    subjectCodes: ['ART101', 'MUS201'],
-    schoolId: 'school-1',
-    userName: 'davidwilson',
-    createdAt: '2024-01-19T16:30:00Z'
-  }
-];
-
-const mockStaffDetails: Record<string, GetSingleStaffResponse> = {
-  '1': {
-    id: '1',
-    fullName: 'John Smith',
-    email: 'john.smith@idealschool.edu',
-    phoneNumber: '+1-555-0123',
-    address: '123 Main St, Anytown, ST 12345',
-    gender: 'male',
-    UIN: 'STF001',
-    profilePicture: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-    subjectCodes: ['MATH101', 'PHYS201'],
-    schoolId: 'school-1',
-    userName: 'johnsmith',
-    createdAt: '2024-01-15T10:30:00Z',
-    updatedAt: '2024-01-15T10:30:00Z'
-  },
-  '2': {
-    id: '2',
-    fullName: 'Sarah Johnson',
-    email: 'sarah.johnson@idealschool.edu',
-    phoneNumber: '+1-555-0124',
-    address: '456 Oak Ave, Anytown, ST 12345',
-    gender: 'female',
-    UIN: 'STF002',
-    profilePicture: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
-    subjectCodes: ['ENG101', 'LIT201'],
-    schoolId: 'school-1',
-    userName: 'sarahjohnson',
-    createdAt: '2024-01-16T14:20:00Z',
-    updatedAt: '2024-01-16T14:20:00Z'
-  },
-  '3': {
-    id: '3',
-    fullName: 'Michael Brown',
-    email: 'michael.brown@idealschool.edu',
-    phoneNumber: '+1-555-0125',
-    address: '789 Pine St, Anytown, ST 12345',
-    gender: 'male',
-    UIN: 'STF003',
-    profilePicture: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-    subjectCodes: ['SCI101', 'BIO201'],
-    schoolId: 'school-1',
-    userName: 'michaelbrown',
-    createdAt: '2024-01-17T09:15:00Z',
-    updatedAt: '2024-01-17T09:15:00Z'
-  },
-  '4': {
-    id: '4',
-    fullName: 'Emily Davis',
-    email: 'emily.davis@idealschool.edu',
-    phoneNumber: '+1-555-0126',
-    address: '321 Elm St, Anytown, ST 12345',
-    gender: 'female',
-    UIN: 'STF004',
-    profilePicture: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
-    subjectCodes: ['HIST101', 'GEO201'],
-    schoolId: 'school-1',
-    userName: 'emilydavis',
-    createdAt: '2024-01-18T11:45:00Z',
-    updatedAt: '2024-01-18T11:45:00Z'
-  },
-  '5': {
-    id: '5',
-    fullName: 'David Wilson',
-    email: 'david.wilson@idealschool.edu',
-    phoneNumber: '+1-555-0127',
-    address: '654 Maple Dr, Anytown, ST 12345',
-    gender: 'male',
-    UIN: 'STF005',
-    profilePicture: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
-    subjectCodes: ['ART101', 'MUS201'],
-    schoolId: 'school-1',
-    userName: 'davidwilson',
-    createdAt: '2024-01-19T16:30:00Z',
-    updatedAt: '2024-01-19T16:30:00Z'
-  }
-};
 
 export const useStaffStore = create<StaffState>((set, get) => ({
   // Initial state
@@ -174,15 +35,30 @@ export const useStaffStore = create<StaffState>((set, get) => ({
   error: null,
 
   // Actions
-  fetchStaffList: async () => {
+  fetchStaffList: async (searchParam?: string) => {
     set({ isLoading: true, error: null });
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      set({ staffList: mockStaffList, isLoading: false });
-    } catch (error) {
+      // Use search parameter if provided, otherwise get all staff
+      const endpoint = searchParam 
+        ? `/Staff/get-staffs-with-spec?param=${encodeURIComponent(searchParam)}`
+        : '/Staff/get-staffs-with-spec?param='; // Empty param to get all
+      
+      const response = await axiosInstance.get<GetManyStaffResponse[]>(endpoint);
+      set({ staffList: response.data, isLoading: false });
+    } catch (error: any) {
+      // Handle API error responses with details field
+      let errorMessage = 'Failed to fetch staff list';
+      
+      if (error.response?.data?.details) {
+        errorMessage = error.response.data.details;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       set({ 
-        error: error instanceof Error ? error.message : 'Failed to fetch staff list',
+        error: errorMessage,
         isLoading: false 
       });
     }
@@ -191,16 +67,39 @@ export const useStaffStore = create<StaffState>((set, get) => ({
   fetchStaffById: async (id: string) => {
     set({ isLoading: true, error: null });
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 300));
-      const staff = mockStaffDetails[id];
-      if (!staff) {
-        throw new Error('Staff member not found');
+      const response = await axiosInstance.get<StaffApiResponse>(`/Staff/get-staff-with-id?id=${id}`);
+      
+      // Handle nested response structure from backend
+      const apiResponse = response.data;
+      
+      // Normalize the data from backend format to frontend format
+      const staffData: GetSingleStaffResponse = {
+        id: apiResponse.data.id,
+        fullName: apiResponse.data.fullName,
+        email: apiResponse.data.email,
+        phoneNumber: apiResponse.data.phoneNumber,
+        address: apiResponse.data.address,
+        gender: apiResponse.data.gender,
+        UIN: apiResponse.data.uin, // Convert lowercase to uppercase for consistency
+        profilePicture: apiResponse.data.profilePicture,
+        subjectCodes: apiResponse.data.subjectCodes
+      };
+      
+      set({ selectedStaff: staffData, isLoading: false });
+    } catch (error: any) {
+      // Handle API error responses with details field
+      let errorMessage = 'Failed to fetch staff details';
+      
+      if (error.response?.data?.details) {
+        errorMessage = error.response.data.details;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
       }
-      set({ selectedStaff: staff, isLoading: false });
-    } catch (error) {
+      
       set({ 
-        error: error instanceof Error ? error.message : 'Failed to fetch staff details',
+        error: errorMessage,
         isLoading: false 
       });
     }
@@ -209,41 +108,41 @@ export const useStaffStore = create<StaffState>((set, get) => ({
   createStaff: async (staffData: CreateStaffRequest) => {
     set({ isLoading: true, error: null });
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      // Generate new staff member
-      const newId = (mockStaffList.length + 1).toString();
-      const newUIN = `STF${String(mockStaffList.length + 1).padStart(3, '0')}`;
-      const newStaff: GetManyStaffResponse = {
-        id: newId,
-        fullName: `${staffData.firstName} ${staffData.lastName}`,
-        email: staffData.email,
-        gender: staffData.gender,
-        UIN: newUIN,
-        profilePicture: typeof staffData.profilePicture === 'string' ? staffData.profilePicture : undefined,
-        subjectCodes: [], // Will be assigned later
-        schoolId: staffData.schoolId,
-        userName: staffData.userName,
-        createdAt: new Date().toISOString()
-      };
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('firstName', staffData.firstName);
+      formData.append('lastName', staffData.lastName);
+      formData.append('email', staffData.email);
+      formData.append('phoneNumber', staffData.phoneNumber);
+      formData.append('schoolId', staffData.schoolId);
+      formData.append('address', staffData.address);
+      formData.append('password', staffData.password);
+      formData.append('gender', staffData.gender);
+      formData.append('userName', staffData.userName);
+      formData.append('profilePicture', staffData.profilePicture);
 
-      // Add to mock data
-      mockStaffList.push(newStaff);
-      mockStaffDetails[newId] = {
-        ...newStaff,
-        phoneNumber: staffData.phoneNumber,
-        address: staffData.address,
-        updatedAt: new Date().toISOString()
-      };
-
-      set({ 
-        staffList: [...mockStaffList], 
-        isLoading: false 
+      await axiosInstance.post('/Staff/create-staff', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
-    } catch (error) {
+
+      // Refresh staff list after creation
+      await get().fetchStaffList();
+    } catch (error: any) {
+      // Handle API error responses with details field
+      let errorMessage = 'Failed to create staff member';
+      
+      if (error.response?.data?.details) {
+        errorMessage = error.response.data.details;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       set({ 
-        error: error instanceof Error ? error.message : 'Failed to create staff member',
+        error: errorMessage,
         isLoading: false 
       });
     }
@@ -252,44 +151,23 @@ export const useStaffStore = create<StaffState>((set, get) => ({
   updateStaff: async (id: string, staffData: UpdateStaffRequest) => {
     set({ isLoading: true, error: null });
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 600));
+      // Note: Backend doesn't have update endpoint, so we'll handle this gracefully
+      // For now, we'll show an error indicating update is not supported
+      throw new Error('Update staff functionality is not available in the backend API');
+    } catch (error: any) {
+      // Handle API error responses with details field
+      let errorMessage = 'Failed to update staff member';
       
-      // Update mock data
-      const staffIndex = mockStaffList.findIndex(staff => staff.id === id);
-      if (staffIndex !== -1) {
-        mockStaffList[staffIndex] = {
-          ...mockStaffList[staffIndex],
-          fullName: `${staffData.firstName} ${staffData.lastName}`,
-          email: staffData.email,
-          gender: staffData.gender,
-          userName: staffData.userName,
-          profilePicture: typeof staffData.profilePicture === 'string' ? staffData.profilePicture : mockStaffList[staffIndex].profilePicture
-        };
+      if (error.response?.data?.details) {
+        errorMessage = error.response.data.details;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
       }
-
-      if (mockStaffDetails[id]) {
-        mockStaffDetails[id] = {
-          ...mockStaffDetails[id],
-          fullName: `${staffData.firstName} ${staffData.lastName}`,
-          email: staffData.email,
-          phoneNumber: staffData.phoneNumber,
-          address: staffData.address,
-          gender: staffData.gender,
-          userName: staffData.userName,
-          profilePicture: typeof staffData.profilePicture === 'string' ? staffData.profilePicture : mockStaffDetails[id].profilePicture,
-          updatedAt: new Date().toISOString()
-        };
-      }
-
+      
       set({ 
-        staffList: [...mockStaffList],
-        selectedStaff: mockStaffDetails[id] || null,
-        isLoading: false 
-      });
-    } catch (error) {
-      set({ 
-        error: error instanceof Error ? error.message : 'Failed to update staff member',
+        error: errorMessage,
         isLoading: false 
       });
     }
@@ -298,21 +176,24 @@ export const useStaffStore = create<StaffState>((set, get) => ({
   deleteStaff: async (id: string) => {
     set({ isLoading: true, error: null });
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 400));
+      await axiosInstance.delete(`/Staff/delete-staff?id=${id}`);
       
-      // Remove from mock data
-      const filteredList = mockStaffList.filter(staff => staff.id !== id);
-      delete mockStaffDetails[id];
-
+      // Refresh staff list after deletion
+      await get().fetchStaffList();
+    } catch (error: any) {
+      // Handle API error responses with details field
+      let errorMessage = 'Failed to delete staff member';
+      
+      if (error.response?.data?.details) {
+        errorMessage = error.response.data.details;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       set({ 
-        staffList: filteredList,
-        selectedStaff: null,
-        isLoading: false 
-      });
-    } catch (error) {
-      set({ 
-        error: error instanceof Error ? error.message : 'Failed to delete staff member',
+        error: errorMessage,
         isLoading: false 
       });
     }

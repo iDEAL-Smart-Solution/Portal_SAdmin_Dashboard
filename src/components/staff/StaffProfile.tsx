@@ -37,15 +37,15 @@ const StaffProfile: React.FC<StaffProfileProps> = ({ staff, onEdit, onBack }) =>
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
+  // const formatDate = (dateString: string) => {
+  //   return new Date(dateString).toLocaleDateString('en-US', {
+  //     year: 'numeric',
+  //     month: 'long',
+  //     day: 'numeric',
+  //     hour: '2-digit',
+  //     minute: '2-digit'
+  //   });
+  // };
 
   return (
     <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md">
@@ -122,16 +122,10 @@ const StaffProfile: React.FC<StaffProfileProps> = ({ staff, onEdit, onBack }) =>
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
                 <span className="font-medium">UIN:</span>
-                <span className="ml-2">{staff.UIN}</span>
+                <span className="ml-2">{staff.UIN || 'N/A'}</span>
               </div>
               
-              <div className="flex items-center">
-                <svg className="w-5 h-5 mr-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
-                </svg>
-                <span className="font-medium">Username:</span>
-                <span className="ml-2">{staff.userName}</span>
-              </div>
+              {/* Username not available in backend response */}
             </div>
           </div>
         </div>
@@ -188,17 +182,14 @@ const StaffProfile: React.FC<StaffProfileProps> = ({ staff, onEdit, onBack }) =>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Staff UIN</label>
-                <p className="text-gray-900 font-mono">{staff.UIN}</p>
+                <p className="text-gray-900 font-mono">{staff.UIN || 'N/A'}</p>
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                <p className="text-gray-900 font-mono">{staff.userName}</p>
-              </div>
+              {/* Username not available in backend response */}
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Assigned Subjects</label>
-                {staff.subjectCodes.length > 0 ? (
+                {staff.subjectCodes && staff.subjectCodes.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {staff.subjectCodes.map((code, index) => (
                       <span
@@ -214,15 +205,7 @@ const StaffProfile: React.FC<StaffProfileProps> = ({ staff, onEdit, onBack }) =>
                 )}
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Member Since</label>
-                <p className="text-gray-900">{formatDate(staff.createdAt)}</p>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Last Updated</label>
-                <p className="text-gray-900">{formatDate(staff.updatedAt)}</p>
-              </div>
+              {/* Date fields not available in backend response */}
             </div>
           </div>
         </div>

@@ -1,15 +1,39 @@
 // Academic data management types and interfaces
 
 export enum Term {
-  First = 'First',
-  Second = 'Second',
-  Third = 'Third'
+  first = 'first',
+  second = 'second',
+  third = 'third'
 }
 
-export interface CreateAcademicSessionRequest {
-  Current_Session: string; // e.g., "2025/2026"
-  Current_Term: Term;
-}
+// Helper function to convert backend term number to Term enum
+export const convertNumberToTerm = (termNumber: number): Term => {
+  switch (termNumber) {
+    case 1:
+      return Term.first;
+    case 2:
+      return Term.second;
+    case 3:
+      return Term.third;
+    default:
+      return Term.first; // Default fallback
+  }
+};
+
+// Helper function to convert Term enum to backend term number
+export const convertTermToNumber = (term: Term): number => {
+  switch (term) {
+    case Term.first:
+      return 1;
+    case Term.second:
+      return 2;
+    case Term.third:
+      return 3;
+    default:
+      return 1; // Default fallback
+  }
+};
+
 
 export interface UpdateAcademicSessionRequest {
   Id: string;
@@ -21,6 +45,20 @@ export interface UpdateTermRequest {
   Current_Term: Term;
 }
 
+// Backend API Response Structure
+export interface AcademicSessionApiResponse {
+  statusCode: number;
+  message: string;
+  data: {
+    id: string;
+    current_Session: string;
+    current_Term: number; // 1, 2, 3
+    schoolLogoFilePath: string | null;
+    schoolName: string;
+  };
+}
+
+// Frontend interface for internal use (normalized)
 export interface GetAcademicSessionResponse {
   Id: string;
   Current_Session: string;

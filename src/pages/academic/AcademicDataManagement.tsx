@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import AcademicDataList from './AcademicDataList';
-import AddAcademicSession from './AddAcademicSession';
 import UpdateAcademicSession from './UpdateAcademicSession';
 import UpdateBranding from './UpdateBranding';
 
-type AcademicView = 'list' | 'add' | 'edit' | 'branding';
+type AcademicView = 'list' | 'edit' | 'branding';
 
 interface AcademicDataManagementProps {
   onBack?: () => void;
@@ -22,9 +21,6 @@ const AcademicDataManagement: React.FC<AcademicDataManagementProps> = ({ onBack 
     setCurrentView('branding');
   };
 
-  const handleAddSession = () => {
-    setCurrentView('add');
-  };
 
   const handleBackToList = () => {
     setCurrentView('list');
@@ -41,15 +37,6 @@ const AcademicDataManagement: React.FC<AcademicDataManagementProps> = ({ onBack 
           <AcademicDataList
             onEditSession={handleEditSession}
             onUpdateBranding={handleUpdateBranding}
-            onAddSession={handleAddSession}
-          />
-        );
-      
-      case 'add':
-        return (
-          <AddAcademicSession
-            onBack={handleBackToList}
-            onSuccess={handleSuccess}
           />
         );
       
@@ -75,7 +62,6 @@ const AcademicDataManagement: React.FC<AcademicDataManagementProps> = ({ onBack 
           <AcademicDataList
             onEditSession={handleEditSession}
             onUpdateBranding={handleUpdateBranding}
-            onAddSession={handleAddSession}
           />
         );
     }
