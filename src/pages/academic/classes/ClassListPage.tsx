@@ -36,7 +36,8 @@ export default function ClassListPage() {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold">Manage Classes</h1>
-        <Button onClick={() => { setEditingClass(null); setIsModalOpen(true); }}>
+        <Button onClick={() => { setEditingClass(null); setIsModalOpen(true); }} className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg shadow-sm"
+>
           + Add Class
         </Button>
       </div>
