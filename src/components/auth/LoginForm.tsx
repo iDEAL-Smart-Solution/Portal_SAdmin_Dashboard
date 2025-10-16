@@ -112,15 +112,39 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoading = false, erro
 
         {/* Error Display */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-md p-3">
+          <div className={`border rounded-md p-4 ${
+            error.includes('Access denied') 
+              ? 'bg-orange-50 border-orange-200' 
+              : 'bg-red-50 border-red-200'
+          }`}>
             <div className="flex">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
+                {error.includes('Access denied') ? (
+                  <svg className="h-6 w-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                ) : (
+                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                )}
               </div>
               <div className="ml-3">
-                <p className="text-sm text-red-700">{error}</p>
+                <h3 className={`text-sm font-medium ${
+                  error.includes('Access denied') ? 'text-orange-800' : 'text-red-800'
+                }`}>
+                  {error.includes('Access denied') ? 'Access Restricted' : 'Login Error'}
+                </h3>
+                <div className={`mt-1 text-sm ${
+                  error.includes('Access denied') ? 'text-orange-700' : 'text-red-700'
+                }`}>
+                  <p>{error}</p>
+                  {error.includes('Access denied') && (
+                    <p className="mt-2 font-medium">
+                      Please contact your system administrator for a School Admin account.
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </div>

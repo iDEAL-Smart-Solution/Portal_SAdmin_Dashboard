@@ -18,7 +18,7 @@ const AcademicSessionForm: React.FC<AcademicSessionFormProps> = ({
 }) => {
   const [formData, setFormData] = useState<AcademicSessionFormData>({
     Current_Session: '',
-    Current_Term: Term.First
+    Current_Term: Term.first
   });
 
   const [errors, setErrors] = useState<Partial<Record<keyof AcademicSessionFormData, string>>>({});

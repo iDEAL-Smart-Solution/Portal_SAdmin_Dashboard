@@ -90,44 +90,11 @@ const StaffCard: React.FC<StaffCardProps> = ({ staff, onViewProfile, onEdit }) =
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
               <span className="font-medium">UIN:</span>
-              <span className="ml-1">{staff.UIN}</span>
+              <span className="ml-1">{staff.UIN || staff.uin || 'N/A'}</span>
             </div>
 
-            <div className="flex items-center text-sm text-gray-600">
-              <svg className="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
-              </svg>
-              <span className="font-medium">Username:</span>
-              <span className="ml-1">{staff.userName}</span>
-            </div>
-
-            {staff.subjectCodes.length > 0 && (
-              <div className="flex items-start text-sm text-gray-600">
-                <svg className="w-4 h-4 mr-2 mt-0.5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <div>
-                  <span className="font-medium">Subjects:</span>
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {staff.subjectCodes.map((code, index) => (
-                      <span
-                        key={index}
-                        className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-                      >
-                        {code}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="flex items-center text-sm text-gray-500">
-              <svg className="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-              </svg>
-              <span>Joined: {formatDate(staff.createdAt)}</span>
-            </div>
+            {/* Note: Backend GetManyStaffResponse only includes basic info */}
+            {/* Additional details like subjects and join date are available in GetSingleStaffResponse */}
           </div>
         </div>
       </div>

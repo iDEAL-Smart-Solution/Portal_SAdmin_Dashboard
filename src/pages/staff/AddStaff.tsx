@@ -13,18 +13,27 @@ const AddStaff: React.FC<AddStaffProps> = ({ onBack, onSuccess }) => {
 
   const handleSubmit = async (formData: StaffFormData) => {
     try {
+      // Validate required fields
+      if (!formData.password) {
+        throw new Error('Password is required');
+      }
+      
+      if (!formData.profilePicture || typeof formData.profilePicture === 'string') {
+        throw new Error('Profile picture is required');
+      }
+
       // Convert form data to CreateStaffRequest
       const createRequest: CreateStaffRequest = {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
         phoneNumber: formData.phoneNumber,
-        schoolId: 'school-1', // This would come from context/auth in real app
+        schoolId: formData.schoolId || 'default-school-id', // This should come from auth context
         address: formData.address,
-        password: formData.password || '',
+        password: formData.password,
         gender: formData.gender,
         userName: formData.userName,
-        profilePicture: formData.profilePicture
+        profilePicture: formData.profilePicture as File // Backend expects File, not string
       };
 
       await createStaff(createRequest);

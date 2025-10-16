@@ -22,11 +22,11 @@ const CurrentSessionCard: React.FC<CurrentSessionCardProps> = ({
 
   const getTermBadgeColor = (term: Term) => {
     switch (term) {
-      case Term.First:
+      case Term.first:
         return 'bg-green-100 text-green-800 border-green-200';
-      case Term.Second:
+      case Term.second:
         return 'bg-blue-100 text-blue-800 border-blue-200';
-      case Term.Third:
+      case Term.third:
         return 'bg-purple-100 text-purple-800 border-purple-200';
       default:
         return 'bg-gray-100 text-gray-800 border-gray-200';
