@@ -11,67 +11,64 @@ interface StudentListProps {
 const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent, onAddStudent }) => {
   const { studentList, isLoading, error, fetchStudentList, clearError } = useStudentStore();
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterGender, setFilterGender] = useState<string>('all');
-  const [filterClass, setFilterClass] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<'name' | 'date' | 'uin' | 'class'>('name');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState<'name' | 'uin' | 'email'>('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   useEffect(() => {
     fetchStudentList();
   }, [fetchStudentList]);
 
-  // Get unique classes for filter
-  const uniqueClasses = React.useMemo(() => {
-    const classes = studentList.map(student => student.className);
-    return Array.from(new Set(classes)).sort();
-  }, [studentList]);
+  // Debounce search term to avoid too many API calls
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
 
-  // Filter and sort students
-  const filteredAndSortedStudents = React.useMemo(() => {
-    let filtered = studentList.filter(student => {
-      const matchesSearch = student.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           student.UIN.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           student.className.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesGender = filterGender === 'all' || student.gender === filterGender;
-      const matchesClass = filterClass === 'all' || student.className === filterClass;
-      
-      return matchesSearch && matchesGender && matchesClass;
-    });
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
-    // Sort the filtered results
-    filtered.sort((a, b) => {
+  // Fetch student list when search term changes
+  useEffect(() => {
+    fetchStudentList(debouncedSearchTerm || undefined);
+  }, [debouncedSearchTerm, fetchStudentList]);
+
+  const handleClearSearch = () => {
+    setSearchTerm('');
+  };
+
+
+  // Sort the student list based on current sort settings
+  const sortedStudentList = React.useMemo(() => {
+    const sorted = [...studentList].sort((a, b) => {
+      let aValue: string;
+      let bValue: string;
+
       switch (sortBy) {
         case 'name':
-          return a.fullName.localeCompare(b.fullName);
-        case 'date':
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          aValue = a.fullName.toLowerCase();
+          bValue = b.fullName.toLowerCase();
+          break;
         case 'uin':
-          return a.UIN.localeCompare(b.UIN);
-        case 'class':
-          return a.className.localeCompare(b.className);
+          aValue = a.UIN.toLowerCase();
+          bValue = b.UIN.toLowerCase();
+          break;
+        case 'email':
+          aValue = a.email.toLowerCase();
+          bValue = b.email.toLowerCase();
+          break;
         default:
           return 0;
       }
+
+      if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
     });
 
-    return filtered;
-  }, [studentList, searchTerm, filterGender, filterClass, sortBy]);
+    return sorted;
+  }, [studentList, sortBy, sortOrder]);
 
-  const handleClearFilters = () => {
-    setSearchTerm('');
-    setFilterGender('all');
-    setFilterClass('all');
-    setSortBy('name');
-  };
-
-  const getClassBadgeColor = (className: string) => {
-    if (className.includes('Grade 9')) return 'bg-green-100 text-green-800';
-    if (className.includes('Grade 10')) return 'bg-blue-100 text-blue-800';
-    if (className.includes('Grade 11')) return 'bg-yellow-100 text-yellow-800';
-    if (className.includes('Grade 12')) return 'bg-purple-100 text-purple-800';
-    return 'bg-gray-100 text-gray-800';
-  };
 
   if (error) {
     return (
@@ -116,6 +113,16 @@ const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent,
             <p className="mt-2 text-gray-600">
               View and manage all students in your school
             </p>
+            {(sortBy !== 'name' || sortOrder !== 'asc') && (
+              <div className="mt-2">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M3 3a1 1 0 000 2h11.586l-4.293 4.293a1 1 0 101.414 1.414L16.414 6H19a1 1 0 100-2H3zM3 17a1 1 0 100 2h11.586l-4.293-4.293a1 1 0 111.414-1.414L16.414 18H19a1 1 0 100-2H3z" />
+                  </svg>
+                  Sorted by {sortBy} ({sortOrder === 'asc' ? 'A-Z' : 'Z-A'})
+                </span>
+              </div>
+            )}
           </div>
           <button
             onClick={onAddStudent}
@@ -131,7 +138,7 @@ const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent,
 
       {/* Filters and Search */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Search */}
           <div className="md:col-span-2">
             <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-2">
@@ -154,72 +161,67 @@ const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent,
             </div>
           </div>
 
-          {/* Gender Filter */}
+          {/* Sort By */}
           <div>
-            <label htmlFor="gender-filter" className="block text-sm font-medium text-gray-700 mb-2">
-              Filter by Gender
+            <label htmlFor="sort-by" className="block text-sm font-medium text-gray-700 mb-2">
+              Sort By
             </label>
             <select
-              id="gender-filter"
-              value={filterGender}
-              onChange={(e) => setFilterGender(e.target.value)}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-            >
-              <option value="all">All Genders</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-
-          {/* Class Filter */}
-          <div>
-            <label htmlFor="class-filter" className="block text-sm font-medium text-gray-700 mb-2">
-              Filter by Class
-            </label>
-            <select
-              id="class-filter"
-              value={filterClass}
-              onChange={(e) => setFilterClass(e.target.value)}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-            >
-              <option value="all">All Classes</option>
-              {uniqueClasses.map((className) => (
-                <option key={className} value={className}>
-                  {className}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Sort */}
-          <div>
-            <label htmlFor="sort" className="block text-sm font-medium text-gray-700 mb-2">
-              Sort by
-            </label>
-            <select
-              id="sort"
+              id="sort-by"
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as 'name' | 'date' | 'uin' | 'class')}
+              onChange={(e) => setSortBy(e.target.value as 'name' | 'uin' | 'email')}
               className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
             >
               <option value="name">Name</option>
-              <option value="class">Class</option>
-              <option value="date">Enrollment Date</option>
               <option value="uin">UIN</option>
+              <option value="email">Email</option>
+            </select>
+          </div>
+
+          {/* Sort Order */}
+          <div>
+            <label htmlFor="sort-order" className="block text-sm font-medium text-gray-700 mb-2">
+              Order
+            </label>
+            <select
+              id="sort-order"
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+            >
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
             </select>
           </div>
         </div>
 
         {/* Clear Filters */}
-        {(searchTerm || filterGender !== 'all' || filterClass !== 'all' || sortBy !== 'name') && (
-          <div className="mt-4 flex justify-end">
-            <button
-              onClick={handleClearFilters}
-              className="text-sm text-gray-500 hover:text-gray-700 underline"
-            >
-              Clear all filters
-            </button>
+        {(searchTerm || sortBy !== 'name' || sortOrder !== 'asc') && (
+          <div className="mt-4 flex justify-between items-center">
+            <div className="text-sm text-gray-500">
+              Sorted by <span className="font-medium capitalize">{sortBy}</span> ({sortOrder === 'asc' ? 'A-Z' : 'Z-A'})
+            </div>
+            <div className="flex space-x-4">
+              {searchTerm && (
+                <button
+                  onClick={handleClearSearch}
+                  className="text-sm text-gray-500 hover:text-gray-700 underline"
+                >
+                  Clear search
+                </button>
+              )}
+              {(sortBy !== 'name' || sortOrder !== 'asc') && (
+                <button
+                  onClick={() => {
+                    setSortBy('name');
+                    setSortOrder('asc');
+                  }}
+                  className="text-sm text-gray-500 hover:text-gray-700 underline"
+                >
+                  Reset sorting
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -237,7 +239,7 @@ const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent,
               <div className="ml-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">Total Students</dt>
-                  <dd className="text-lg font-medium text-gray-900">{studentList.length}</dd>
+                  <dd className="text-lg font-medium text-gray-900">{sortedStudentList.length}</dd>
                 </dl>
               </div>
             </div>
@@ -248,17 +250,15 @@ const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent,
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-                  <svg className="h-4 w-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                  </svg>
-                </div>
+                <svg className="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">Male Students</dt>
                   <dd className="text-lg font-medium text-gray-900">
-                    {studentList.filter(s => s.gender === 'male').length}
+                    {sortedStudentList.filter(student => student.gender === 'male').length}
                   </dd>
                 </dl>
               </div>
@@ -270,17 +270,15 @@ const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent,
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <div className="w-6 h-6 bg-pink-100 rounded-full flex items-center justify-center">
-                  <svg className="h-4 w-4 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                  </svg>
-                </div>
+                <svg className="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                </svg>
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">Female Students</dt>
                   <dd className="text-lg font-medium text-gray-900">
-                    {studentList.filter(s => s.gender === 'female').length}
+                    {sortedStudentList.filter(student => student.gender === 'female').length}
                   </dd>
                 </dl>
               </div>
@@ -299,30 +297,11 @@ const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent,
               <div className="ml-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">Showing</dt>
-                  <dd className="text-lg font-medium text-gray-900">{filteredAndSortedStudents.length}</dd>
+                  <dd className="text-lg font-medium text-gray-900">{sortedStudentList.length}</dd>
                 </dl>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Class Distribution */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Class Distribution</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-          {uniqueClasses.map((className) => {
-            const count = studentList.filter(s => s.className === className).length;
-            return (
-              <div key={className} className="text-center">
-                <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getClassBadgeColor(className)}`}>
-                  {className}
-                </div>
-                <div className="mt-1 text-lg font-semibold text-gray-900">{count}</div>
-                <div className="text-xs text-gray-500">students</div>
-              </div>
-            );
-          })}
         </div>
       </div>
 
@@ -331,22 +310,22 @@ const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent,
         <div className="flex justify-center items-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
         </div>
-      ) : filteredAndSortedStudents.length === 0 ? (
+      ) : sortedStudentList.length === 0 ? (
         <div className="text-center py-12">
           <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
           </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No students found</h3>
+          <h3 className="mt-2 text-sm font-medium text-gray-900">
+            {searchTerm ? `No students found matching "${searchTerm}"` : 'No students found'}
+          </h3>
           <p className="mt-1 text-sm text-gray-500">
-            {searchTerm || filterGender !== 'all' || filterClass !== 'all'
-              ? 'Try adjusting your search or filter criteria.' 
-              : 'Get started by adding your first student.'}
+            {searchTerm ? 'Try adjusting your search terms.' : 'Get started by adding a new student.'}
           </p>
-          {!searchTerm && filterGender === 'all' && filterClass === 'all' && (
+          {!searchTerm && (
             <div className="mt-6">
               <button
                 onClick={onAddStudent}
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
+                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
               >
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -358,7 +337,7 @@ const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent,
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {filteredAndSortedStudents.map((student) => (
+          {sortedStudentList.map((student) => (
             <StudentCard
               key={student.id}
               student={student}

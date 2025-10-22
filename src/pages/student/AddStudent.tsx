@@ -18,14 +18,16 @@ const AddStudent: React.FC<AddStudentProps> = ({ onBack, onSuccess }) => {
         firstName: formData.firstName,
         lastName: formData.lastName,
         middleName: formData.middleName,
-        dateOfBirth: formData.dateOfBirth,
+        dateOfBirth: new Date(formData.dateOfBirth),
         email: formData.email,
         phoneNumber: formData.phoneNumber,
         classId: formData.classId,
         address: formData.address,
         password: formData.password || '',
         gender: formData.gender,
-        profilePicture: formData.profilePicture
+        profilePicture: formData.profilePicture as File,
+        birthCertificate: formData.birthCertificate as File,
+        previousResulturl: formData.previousResulturl as File
       };
 
       await createStudent(createRequest);

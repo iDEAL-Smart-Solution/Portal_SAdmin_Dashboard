@@ -1,4 +1,5 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import {
   Users,
@@ -9,16 +10,14 @@ import {
 } from "lucide-react";
 
 interface LayoutProps {
-  activeModule: string;
-  onModuleChange: (module: string) => void;
   children: React.ReactNode;
 }
 
 const Layout: React.FC<LayoutProps> = ({
-  activeModule,
-  onModuleChange,
   children,
 }) => {
+  const location = useLocation();
+  const activeModule = location.pathname.substring(1) || 'academic';
   // Dynamic page title & description for better clarity
   const pageInfo = {
     staff: {
@@ -54,7 +53,7 @@ const Layout: React.FC<LayoutProps> = ({
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
       <div className="w-72 flex-shrink-0 border-r bg-white shadow-sm">
-        <Sidebar activeModule={activeModule} onModuleChange={onModuleChange} />
+        <Sidebar activeModule={activeModule} onModuleChange={() => {}} />
       </div>
 
       {/* Main Content */}

@@ -29,6 +29,8 @@ const StudentForm: React.FC<StudentFormProps> = ({
     address: '',
     gender: 'male',
     profilePicture: undefined,
+    birthCertificate: undefined,
+    previousResulturl: undefined,
     ...(isEdit ? {} : { password: '' })
   });
 
@@ -90,6 +92,18 @@ const StudentForm: React.FC<StudentFormProps> = ({
 
     if (!isEdit && !formData.password?.trim()) {
       newErrors.password = 'Password is required';
+    }
+
+    if (!isEdit && !formData.profilePicture) {
+      newErrors.profilePicture = 'Profile picture is required';
+    }
+
+    if (!isEdit && !formData.birthCertificate) {
+      newErrors.birthCertificate = 'Birth certificate is required';
+    }
+
+    if (!isEdit && !formData.previousResulturl) {
+      newErrors.previousResulturl = 'Previous result document is required';
     }
 
     setErrors(newErrors);
@@ -167,7 +181,60 @@ const StudentForm: React.FC<StudentFormProps> = ({
               className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
             />
           </div>
+          {errors.profilePicture && (
+            <p className="mt-1 text-sm text-red-600">{errors.profilePicture}</p>
+          )}
         </div>
+
+        {/* Birth Certificate Upload */}
+        {!isEdit && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Birth Certificate *
+            </label>
+            <input
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  handleInputChange('birthCertificate', file);
+                }
+              }}
+              className={`block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 ${
+                errors.birthCertificate ? 'border-red-500' : ''
+              }`}
+            />
+            {errors.birthCertificate && (
+              <p className="mt-1 text-sm text-red-600">{errors.birthCertificate}</p>
+            )}
+          </div>
+        )}
+
+        {/* Previous Result Document Upload */}
+        {!isEdit && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Previous Result Document *
+            </label>
+            <input
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  handleInputChange('previousResulturl', file);
+                }
+              }}
+              className={`block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 ${
+                errors.previousResulturl ? 'border-red-500' : ''
+              }`}
+            />
+            {errors.previousResulturl && (
+              <p className="mt-1 text-sm text-red-600">{errors.previousResulturl}</p>
+            )}
+          </div>
+        )}
 
         {/* Name Fields */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

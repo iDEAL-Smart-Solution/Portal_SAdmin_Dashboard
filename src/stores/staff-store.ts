@@ -38,12 +38,9 @@ export const useStaffStore = create<StaffState>((set, get) => ({
   fetchStaffList: async (searchParam?: string) => {
     set({ isLoading: true, error: null });
     try {
-      // Use search parameter if provided, otherwise get all staff
-      const endpoint = searchParam 
-        ? `/Staff/get-staffs-with-spec?param=${encodeURIComponent(searchParam)}`
-        : '/Staff/get-staffs-with-spec?param='; // Empty param to get all
-      
-      const response = await axiosInstance.get<GetManyStaffResponse[]>(endpoint);
+      // Always send a param, even if empty string, so backend can handle it properly
+      const paramValue = searchParam || '';
+      const response = await axiosInstance.get<GetManyStaffResponse[]>(`/Staff/get-staffs-with-spec?param=${encodeURIComponent(paramValue)}`);
       set({ staffList: response.data, isLoading: false });
     } catch (error: any) {
       // Handle API error responses with details field

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../stores/auth-store';
 import logo from '../../assets/logo.jpg';
 
@@ -9,8 +10,27 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange }) => {
   const { logout } = useAuthStore();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Get current module from URL
+  const currentModule = location.pathname.substring(1) || 'academic';
+
+  const handleModuleChange = (moduleId: string) => {
+    navigate(`/${moduleId}`);
+  };
 
   const navigationItems = [
+    {
+      id: 'academic',
+      name: 'Academic Data',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      ),
+      description: 'Manage academic sessions and branding'
+    },
     {
       id: 'staff',
       name: 'Manage Staff',
@@ -32,14 +52,14 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange }) => {
       description: 'Add, edit, and manage student records'
     },
     {
-      id: 'academic',
-      name: 'Academic Data',
+      id: 'class',
+      name: 'Manage Classes',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
         </svg>
       ),
-      description: 'Manage academic sessions and branding'
+      description: 'Create and manage classes'
     },
     {
       id: 'schools',
@@ -82,10 +102,10 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange }) => {
         {navigationItems.map((item) => (
           <button
             key={item.id}
-            onClick={() => !item.disabled && onModuleChange(item.id)}
+            onClick={() => !item.disabled && handleModuleChange(item.id)}
             disabled={item.disabled}
             className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors ${
-              activeModule === item.id
+              currentModule === item.id
                 ? 'bg-purple-100 text-purple-700 border border-purple-200'
                 : item.disabled
                 ? 'text-gray-400 cursor-not-allowed'
@@ -93,7 +113,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange }) => {
             }`}
           >
             <div className={`flex-shrink-0 ${
-              activeModule === item.id ? 'text-purple-600' : 'text-gray-500'
+              currentModule === item.id ? 'text-purple-600' : 'text-gray-500'
             }`}>
               {item.icon}
             </div>
