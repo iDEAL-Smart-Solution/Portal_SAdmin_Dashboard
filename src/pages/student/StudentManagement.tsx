@@ -81,7 +81,7 @@ const StudentManagement: React.FC<StudentManagementProps> = () => {
             <div className="bg-gray-50 py-8">
               <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center py-12">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
                   <p className="mt-4 text-gray-600">Loading student profile...</p>
                 </div>
               </div>
@@ -134,7 +134,7 @@ const StudentManagement: React.FC<StudentManagementProps> = () => {
                   <div className="mt-6">
                     <button
                       onClick={handleBackToList}
-                      className="bg-green-600 px-4 py-2 rounded-md text-sm font-medium text-white hover:bg-green-700"
+                      className="bg-primary-500 px-4 py-2 rounded-md text-sm font-medium text-white hover:bg-primary-600"
                     >
                       Back to List
                     </button>

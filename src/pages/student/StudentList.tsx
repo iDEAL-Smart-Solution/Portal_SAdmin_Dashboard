@@ -115,7 +115,7 @@ const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent,
             </p>
             {(sortBy !== 'name' || sortOrder !== 'asc') && (
               <div className="mt-2">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
                   <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M3 3a1 1 0 000 2h11.586l-4.293 4.293a1 1 0 101.414 1.414L16.414 6H19a1 1 0 100-2H3zM3 17a1 1 0 100 2h11.586l-4.293-4.293a1 1 0 111.414-1.414L16.414 18H19a1 1 0 100-2H3z" />
                   </svg>
@@ -156,7 +156,7 @@ const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent,
                 id="search"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-green-500 focus:border-green-500"
+                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Search by name, email, UIN, or class..."
               />
             </div>
@@ -171,7 +171,7 @@ const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent,
               id="sort-by"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'name' | 'uin' | 'email')}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
             >
               <option value="name">Name</option>
               <option value="uin">UIN</option>
@@ -188,7 +188,7 @@ const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent,
               id="sort-order"
               value={sortOrder}
               onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
             >
               <option value="asc">Ascending</option>
               <option value="desc">Descending</option>
@@ -309,7 +309,7 @@ const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent,
       {/* Student List */}
       {isLoading ? (
         <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
         </div>
       ) : sortedStudentList.length === 0 ? (
         <div className="text-center py-12">
@@ -326,7 +326,7 @@ const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent,
             <div className="mt-6">
               <button
                 onClick={onAddStudent}
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
               >
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
