@@ -11,7 +11,7 @@ interface StaffManagementProps {
   onBack?: () => void;
 }
 
-const StaffManagement: React.FC<StaffManagementProps> = ({ onBack }) => {
+const StaffManagement: React.FC<StaffManagementProps> = () => {
   const [currentView, setCurrentView] = useState<StaffView>('list');
   const [selectedStaffId, setSelectedStaffId] = useState<string>('');
   const { selectedStaff, clearSelectedStaff, fetchStaffById, isLoading, error } = useStaffStore();

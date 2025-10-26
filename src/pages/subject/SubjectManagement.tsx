@@ -11,7 +11,7 @@ interface SubjectManagementProps {
   onBack?: () => void;
 }
 
-const SubjectManagement: React.FC<SubjectManagementProps> = ({ onBack }) => {
+const SubjectManagement: React.FC<SubjectManagementProps> = () => {
   const [currentView, setCurrentView] = useState<SubjectView>('list');
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>('');
   const { selectedSubject, clearSelectedSubject, fetchSubjectById, isLoading, error } = useSubjectStore();

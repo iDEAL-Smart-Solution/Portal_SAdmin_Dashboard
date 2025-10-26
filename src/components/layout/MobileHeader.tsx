@@ -4,7 +4,6 @@ import {
   Users,
   GraduationCap,
   BookOpen,
-  Building2,
   Layers,
   BookMarked,
 } from "lucide-react";

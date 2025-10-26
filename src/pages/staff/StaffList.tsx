@@ -37,16 +37,6 @@ const StaffList: React.FC<StaffListProps> = ({ onViewProfile, onEditStaff, onAdd
     setSearchTerm('');
   };
 
-  const handleSort = (field: 'name' | 'uin' | 'email') => {
-    if (sortBy === field) {
-      // Toggle sort order if same field
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      // Set new field and default to ascending
-      setSortBy(field);
-      setSortOrder('asc');
-    }
-  };
 
   // Sort the staff list based on current sort settings
   const sortedStaffList = React.useMemo(() => {

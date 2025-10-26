@@ -9,7 +9,7 @@ interface LoginPageProps {
 }
 
 const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
-  const { login, isLoading, error, clearError } = useAuthStore();
+  const { login, isLoading, error } = useAuthStore();
 
   const handleLogin = async (formData: LoginFormData) => {
     try {
@@ -22,9 +22,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
     }
   };
 
-  const handleClearError = () => {
-    clearError();
-  };
 
   return (
     <div className="min-h-screen bg-background-secondary flex flex-col justify-center py-12 sm:px-6 lg:px-8">

@@ -11,7 +11,7 @@ interface StudentManagementProps {
   onBack?: () => void;
 }
 
-const StudentManagement: React.FC<StudentManagementProps> = ({ onBack }) => {
+const StudentManagement: React.FC<StudentManagementProps> = () => {
   const [currentView, setCurrentView] = useState<StudentView>('list');
   const [selectedStudentId, setSelectedStudentId] = useState<string>('');
   const { selectedStudent, clearSelectedStudent, fetchStudentById, isLoading, error } = useStudentStore();

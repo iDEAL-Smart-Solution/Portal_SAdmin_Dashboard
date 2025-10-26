@@ -4,10 +4,8 @@ import {
   UpdateTermRequest,
   GetAcademicSessionResponse,
   AcademicSessionApiResponse,
-  AcademicSessionFormData,
   BrandingFormData,
   UpdateBrandingRequest,
-  Term,
   convertNumberToTerm,
   convertTermToNumber
 } from '../types/academic';
@@ -116,7 +114,7 @@ export const useAcademicStore = create<AcademicState>((set, get) => ({
         Current_Term: convertTermToNumber(sessionData.Current_Term)
       };
       
-      const response = await axiosInstance.put('/AcademicSession/update-session', backendRequest);
+      await axiosInstance.put('/AcademicSession/update-session', backendRequest);
       
       // Refresh current session after update
       await get().fetchCurrentSession();
@@ -209,7 +207,7 @@ export const useAcademicStore = create<AcademicState>((set, get) => ({
   migrateToNextSession: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axiosInstance.post('/AcademicSession/next-session');
+      await axiosInstance.post('/AcademicSession/next-session');
       
       // Refresh current session after migration
       await get().fetchCurrentSession();
@@ -235,7 +233,7 @@ export const useAcademicStore = create<AcademicState>((set, get) => ({
   moveToNextTerm: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axiosInstance.post('/AcademicSession/next-term');
+      await axiosInstance.post('/AcademicSession/next-term');
       
       // Refresh current session after term change
       await get().fetchCurrentSession();
@@ -313,7 +311,7 @@ export const useAcademicStore = create<AcademicState>((set, get) => ({
   deleteSession: async (id: string) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axiosInstance.delete(`/AcademicSession/delete-session?id=${id}`);
+      await axiosInstance.delete(`/AcademicSession/delete-session?id=${id}`);
       
       // Refresh current session after deletion
       await get().fetchCurrentSession();

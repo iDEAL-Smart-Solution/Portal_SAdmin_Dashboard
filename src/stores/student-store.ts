@@ -4,7 +4,6 @@ import {
   UpdateStudentRequest, 
   GetSingleStudentResponse, 
   GetManyStudentResponse,
-  StudentFormData,
   ClassOption,
   StudentApiResponse
 } from '../types/student';
@@ -68,13 +67,20 @@ export const useStudentStore = create<StudentState>((set, get) => ({
       const normalizedStudent: GetSingleStudentResponse = {
         id: studentData.id,
         fullName: studentData.fullName,
+        firstName: studentData.fullName.split(' ')[0], // Extract from fullName
+        lastName: studentData.fullName.split(' ').slice(1).join(' '), // Extract from fullName
+        middleName: '', // Default empty since not in API response
         dateOfBirth: studentData.dateOfBirth,
         email: studentData.email,
         phoneNumber: studentData.phoneNumber || studentData.phonenumber,
         className: studentData.className,
+        classId: '', // Default empty since not in API response
         address: studentData.address,
         gender: studentData.gender,
-        UIN: studentData.UIN
+        UIN: studentData.UIN,
+        profilePicture: '', // Default empty since not in API response
+        createdAt: new Date().toISOString(), // Default current time
+        updatedAt: new Date().toISOString() // Default current time
       };
       
       set({ selectedStudent: normalizedStudent, isLoading: false });
@@ -97,13 +103,20 @@ export const useStudentStore = create<StudentState>((set, get) => ({
       const normalizedStudent: GetSingleStudentResponse = {
         id: studentData.id,
         fullName: studentData.fullName,
+        firstName: studentData.fullName.split(' ')[0], // Extract from fullName
+        lastName: studentData.fullName.split(' ').slice(1).join(' '), // Extract from fullName
+        middleName: '', // Default empty since not in API response
         dateOfBirth: studentData.dateOfBirth,
         email: studentData.email,
         phoneNumber: studentData.phoneNumber || studentData.phonenumber,
         className: studentData.className,
+        classId: '', // Default empty since not in API response
         address: studentData.address,
         gender: studentData.gender,
-        UIN: studentData.UIN
+        UIN: studentData.UIN,
+        profilePicture: '', // Default empty since not in API response
+        createdAt: new Date().toISOString(), // Default current time
+        updatedAt: new Date().toISOString() // Default current time
       };
       
       set({ selectedStudent: normalizedStudent, isLoading: false });
@@ -200,7 +213,7 @@ export const useStudentStore = create<StudentState>((set, get) => ({
     }
   },
 
-  updateStudent: async (id: string, studentData: UpdateStudentRequest) => {
+  updateStudent: async (_id: string, _studentData: UpdateStudentRequest) => {
     set({ isLoading: true, error: null });
     try {
       // Note: Update endpoint not available in backend yet

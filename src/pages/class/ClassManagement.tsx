@@ -6,7 +6,7 @@ interface ClassManagementProps {
   onBack: () => void;
 }
 
-const ClassManagement: React.FC<ClassManagementProps> = ({ onBack }) => {
+const ClassManagement: React.FC<ClassManagementProps> = () => {
   const [currentView, setCurrentView] = useState<ClassView>('list');
   const [selectedClassId, setSelectedClassId] = useState<string>('');
 

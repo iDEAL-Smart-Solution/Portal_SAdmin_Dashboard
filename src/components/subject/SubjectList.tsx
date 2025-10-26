@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useSubjectStore } from '../../stores/subject-store';
-import { GetManySubjectResponse } from '../../types/subject';
 
 interface SubjectListProps {
   onViewProfile: (id: string) => void;

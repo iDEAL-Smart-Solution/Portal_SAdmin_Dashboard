@@ -44,19 +44,27 @@ export interface StudentApiResponse {
     phonenumber: string; // Note: backend has both phoneNumber and phonenumber
     gender: string;
     UIN: string;
+    // Note: firstName, lastName, middleName, classId, profilePicture, createdAt, updatedAt are not in the API response
   };
 }
 
 export interface GetSingleStudentResponse {
   id: string;
   fullName: string;
+  firstName: string;
+  lastName: string;
+  middleName?: string;
   dateOfBirth: string;
   email: string;
   phoneNumber: string;
   className: string;
+  classId: string;
   address: string;
   gender: string;
   UIN: string;
+  profilePicture?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface GetManyStudentResponse {
@@ -66,6 +74,9 @@ export interface GetManyStudentResponse {
   className: string;
   gender: string;
   UIN: string;
+  profilePicture?: string;
+  dateOfBirth: string;
+  createdAt: string;
 }
 
 export interface StudentFormData {
@@ -87,6 +98,8 @@ export interface StudentFormData {
 export interface ClassOption {
   id: string;
   name: string;
+  grade: string;
+  section: string;
   studentCount: number;
   subjectCount: number;
 }

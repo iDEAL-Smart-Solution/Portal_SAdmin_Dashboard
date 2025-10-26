@@ -32,7 +32,7 @@ const UpdateStudent: React.FC<UpdateStudentProps> = ({ studentId, onBack, onSucc
         firstName: formData.firstName,
         lastName: formData.lastName,
         middleName: formData.middleName,
-        dateOfBirth: formData.dateOfBirth,
+        dateOfBirth: new Date(formData.dateOfBirth),
         email: formData.email,
         phoneNumber: formData.phoneNumber,
         classId: formData.classId,
@@ -72,7 +72,7 @@ const UpdateStudent: React.FC<UpdateStudentProps> = ({ studentId, onBack, onSucc
       classId: selectedStudent.classId,
       address: selectedStudent.address,
       gender: selectedStudent.gender,
-      profilePicture: selectedStudent.profilePicture
+      profilePicture: selectedStudent.profilePicture ? new File([], 'profile.jpg') : undefined
     };
   };
 

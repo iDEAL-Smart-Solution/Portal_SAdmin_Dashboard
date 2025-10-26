@@ -36,7 +36,7 @@ const UpdateStaff: React.FC<UpdateStaffProps> = ({ staffId, onBack, onSuccess })
         address: formData.address,
         gender: formData.gender,
         userName: formData.userName,
-        profilePicture: formData.profilePicture
+        profilePicture: formData.profilePicture instanceof File ? formData.profilePicture : undefined
       };
 
       await updateStaff(staffId, updateRequest);

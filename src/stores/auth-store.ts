@@ -56,7 +56,7 @@ const initializeAuth = () => {
   };
 };
 
-export const useAuthStore = create<AuthStore>((set) => ({
+export const useAuthStore = create<AuthStore>((set, get) => ({
   // Initial state from sessionStorage
   ...initializeAuth(),
 
@@ -174,8 +174,8 @@ export const useAuthStore = create<AuthStore>((set) => ({
     set({ error: null });
   },
 
-  isAdmin: () => {
-    const { user } = useAuthStore.getState();
+  isAdmin: (): boolean => {
+    const { user } = get();
     return user?.role === 'Admin';
   }
 }));

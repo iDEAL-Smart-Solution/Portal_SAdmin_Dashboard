@@ -4,7 +4,6 @@ import {
   UpdateStaffRequest, 
   GetSingleStaffResponse, 
   GetManyStaffResponse,
-  StaffFormData,
   StaffApiResponse
 } from '../types/staff';
 import axiosInstance from '../lib/axios';
@@ -78,6 +77,7 @@ export const useStaffStore = create<StaffState>((set, get) => ({
         address: apiResponse.data.address,
         gender: apiResponse.data.gender,
         UIN: apiResponse.data.uin, // Convert lowercase to uppercase for consistency
+        userName: '', // Default empty string since userName is not in API response
         profilePicture: apiResponse.data.profilePicture,
         subjectCodes: apiResponse.data.subjectCodes
       };
@@ -145,7 +145,7 @@ export const useStaffStore = create<StaffState>((set, get) => ({
     }
   },
 
-  updateStaff: async (id: string, staffData: UpdateStaffRequest) => {
+  updateStaff: async (_id: string, _staffData: UpdateStaffRequest) => {
     set({ isLoading: true, error: null });
     try {
       // Note: Backend doesn't have update endpoint, so we'll handle this gracefully

@@ -9,9 +9,8 @@ interface AcademicDataManagementProps {
   onBack?: () => void;
 }
 
-const AcademicDataManagement: React.FC<AcademicDataManagementProps> = ({ onBack }) => {
+const AcademicDataManagement: React.FC<AcademicDataManagementProps> = () => {
   const [currentView, setCurrentView] = useState<AcademicView>('list');
-  const [selectedSessionId, setSelectedSessionId] = useState<string>('');
 
   const handleEditSession = () => {
     setCurrentView('edit');

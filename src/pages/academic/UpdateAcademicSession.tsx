@@ -10,7 +10,6 @@ interface UpdateAcademicSessionProps {
 }
 
 const UpdateAcademicSession: React.FC<UpdateAcademicSessionProps> = ({ 
-  sessionId, 
   onBack, 
   onSuccess 
 }) => {

@@ -51,6 +51,7 @@ export interface GetSingleStaffResponse {
   address: string;
   gender: string;
   UIN: string; // Normalized to uppercase for frontend consistency
+  userName: string;
   profilePicture: string;
   subjectCodes?: string[];
 }
