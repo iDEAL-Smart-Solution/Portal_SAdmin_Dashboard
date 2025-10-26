@@ -51,7 +51,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoading = false, erro
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* UIN Field */}
         <div>
-          <label htmlFor="UIN" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="UIN" className="block text-sm font-medium text-text-secondary mb-2">
             UIN (User Identification Number)
           </label>
           <input
@@ -59,20 +59,20 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoading = false, erro
             type="text"
             value={formData.UIN}
             onChange={(e) => handleInputChange('UIN', e.target.value)}
-            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${
-              errors.UIN ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors ${
+              errors.UIN ? 'border-accent-500' : 'border-neutral-300'
             }`}
             placeholder="Enter your UIN"
             disabled={isLoading}
           />
           {errors.UIN && (
-            <p className="mt-1 text-sm text-red-600">{errors.UIN}</p>
+            <p className="mt-1 text-sm text-accent-500">{errors.UIN}</p>
           )}
         </div>
 
         {/* Password Field */}
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="password" className="block text-sm font-medium text-text-secondary mb-2">
             Password
           </label>
           <div className="relative">
@@ -81,8 +81,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoading = false, erro
               type={showPassword ? 'text' : 'password'}
               value={formData.password}
               onChange={(e) => handleInputChange('password', e.target.value)}
-              className={`w-full px-3 py-2 pr-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${
-                errors.password ? 'border-red-500' : 'border-gray-300'
+              className={`w-full px-3 py-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors ${
+                errors.password ? 'border-accent-500' : 'border-neutral-300'
               }`}
               placeholder="Enter your password"
               disabled={isLoading}
@@ -106,37 +106,37 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoading = false, erro
             </button>
           </div>
           {errors.password && (
-            <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+            <p className="mt-1 text-sm text-accent-500">{errors.password}</p>
           )}
         </div>
 
         {/* Error Display */}
         {error && (
-          <div className={`border rounded-md p-4 ${
+          <div className={`border rounded-lg p-4 ${
             error.includes('Access denied') 
-              ? 'bg-orange-50 border-orange-200' 
-              : 'bg-red-50 border-red-200'
+              ? 'bg-warning-50 border-warning-200' 
+              : 'bg-accent-50 border-accent-200'
           }`}>
             <div className="flex">
               <div className="flex-shrink-0">
                 {error.includes('Access denied') ? (
-                  <svg className="h-6 w-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="h-6 w-6 text-warning-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
                   </svg>
                 ) : (
-                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <svg className="h-5 w-5 text-accent-500" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                   </svg>
                 )}
               </div>
               <div className="ml-3">
                 <h3 className={`text-sm font-medium ${
-                  error.includes('Access denied') ? 'text-orange-800' : 'text-red-800'
+                  error.includes('Access denied') ? 'text-warning-800' : 'text-accent-800'
                 }`}>
                   {error.includes('Access denied') ? 'Access Restricted' : 'Login Error'}
                 </h3>
                 <div className={`mt-1 text-sm ${
-                  error.includes('Access denied') ? 'text-orange-700' : 'text-red-700'
+                  error.includes('Access denied') ? 'text-warning-700' : 'text-accent-700'
                 }`}>
                   <p>{error}</p>
                   {error.includes('Access denied') && (
@@ -154,7 +154,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoading = false, erro
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-soft text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
         >
           {isLoading ? (
             <span className="flex items-center">

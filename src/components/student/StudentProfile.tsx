@@ -59,21 +59,21 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ student, onEdit, onBack
   };
 
   const getClassBadgeColor = (className: string) => {
-    if (className.includes('Grade 9')) return 'bg-green-100 text-green-800 border-green-200';
-    if (className.includes('Grade 10')) return 'bg-blue-100 text-blue-800 border-blue-200';
-    if (className.includes('Grade 11')) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    if (className.includes('Grade 12')) return 'bg-purple-100 text-purple-800 border-purple-200';
-    return 'bg-gray-100 text-gray-800 border-gray-200';
+    if (className.includes('Grade 9')) return 'bg-success-100 text-success-800 border-success-200';
+    if (className.includes('Grade 10')) return 'bg-primary-100 text-primary-800 border-primary-200';
+    if (className.includes('Grade 11')) return 'bg-warning-100 text-warning-800 border-warning-200';
+    if (className.includes('Grade 12')) return 'bg-accent-100 text-accent-800 border-accent-200';
+    return 'bg-neutral-100 text-neutral-800 border-neutral-200';
   };
 
   return (
     <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md">
       {/* Header */}
-      <div className="bg-gradient-to-r from-green-600 to-green-700 px-6 py-8 rounded-t-lg">
+      <div className="bg-primary-500 px-6 py-8 rounded-t-lg">
         <div className="flex items-center justify-between">
           <button
             onClick={onBack}
-            className="inline-flex items-center text-white hover:text-green-200 transition-colors"
+            className="inline-flex items-center text-white hover:text-primary-200 transition-colors"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -82,7 +82,7 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ student, onEdit, onBack
           </button>
           <button
             onClick={onEdit}
-            className="inline-flex items-center px-4 py-2 bg-white text-green-600 rounded-md hover:bg-green-50 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-white text-primary-600 rounded-md hover:bg-primary-50 transition-colors"
           >
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />

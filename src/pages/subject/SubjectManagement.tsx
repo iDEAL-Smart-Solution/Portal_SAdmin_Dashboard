@@ -1,41 +1,41 @@
 import React, { useState } from 'react';
-import StaffList from './StaffList';
-import AddStaff from './AddStaff';
-import UpdateStaff from './UpdateStaff';
-import StaffProfile from '../../components/staff/StaffProfile';
-import { useStaffStore } from '../../stores/staff-store';
+import SubjectList from '../../components/subject/SubjectList';
+import AddSubject from './AddSubject';
+import UpdateSubject from './UpdateSubject';
+import SubjectProfile from '../../components/subject/SubjectProfile';
+import { useSubjectStore } from '../../stores/subject-store';
 
-type StaffView = 'list' | 'add' | 'edit' | 'profile';
+type SubjectView = 'list' | 'add' | 'edit' | 'profile';
 
-interface StaffManagementProps {
+interface SubjectManagementProps {
   onBack?: () => void;
 }
 
-const StaffManagement: React.FC<StaffManagementProps> = ({ onBack }) => {
-  const [currentView, setCurrentView] = useState<StaffView>('list');
-  const [selectedStaffId, setSelectedStaffId] = useState<string>('');
-  const { selectedStaff, clearSelectedStaff, fetchStaffById, isLoading, error } = useStaffStore();
+const SubjectManagement: React.FC<SubjectManagementProps> = ({ onBack }) => {
+  const [currentView, setCurrentView] = useState<SubjectView>('list');
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string>('');
+  const { selectedSubject, clearSelectedSubject, fetchSubjectById, isLoading, error } = useSubjectStore();
 
   const handleViewProfile = async (id: string) => {
-    setSelectedStaffId(id);
+    setSelectedSubjectId(id);
     setCurrentView('profile');
-    // Fetch the staff details for the profile view
-    await fetchStaffById(id);
+    // Fetch the subject details for the profile view
+    await fetchSubjectById(id);
   };
 
-  const handleEditStaff = (id: string) => {
-    setSelectedStaffId(id);
+  const handleEditSubject = (id: string) => {
+    setSelectedSubjectId(id);
     setCurrentView('edit');
   };
 
-  const handleAddStaff = () => {
+  const handleAddSubject = () => {
     setCurrentView('add');
   };
 
   const handleBackToList = () => {
     setCurrentView('list');
-    setSelectedStaffId('');
-    clearSelectedStaff();
+    setSelectedSubjectId('');
+    clearSelectedSubject();
   };
 
   const handleBackToProfile = () => {
@@ -44,24 +44,24 @@ const StaffManagement: React.FC<StaffManagementProps> = ({ onBack }) => {
 
   const handleSuccess = () => {
     setCurrentView('list');
-    setSelectedStaffId('');
-    clearSelectedStaff();
+    setSelectedSubjectId('');
+    clearSelectedSubject();
   };
 
   const renderCurrentView = () => {
     switch (currentView) {
       case 'list':
         return (
-          <StaffList
+          <SubjectList
             onViewProfile={handleViewProfile}
-            onEditStaff={handleEditStaff}
-            onAddStaff={handleAddStaff}
+            onEditSubject={handleEditSubject}
+            onAddSubject={handleAddSubject}
           />
         );
       
       case 'add':
         return (
-          <AddStaff
+          <AddSubject
             onBack={handleBackToList}
             onSuccess={handleSuccess}
           />
@@ -69,8 +69,8 @@ const StaffManagement: React.FC<StaffManagementProps> = ({ onBack }) => {
       
       case 'edit':
         return (
-          <UpdateStaff
-            staffId={selectedStaffId}
+          <UpdateSubject
+            subjectId={selectedSubjectId}
             onBack={handleBackToProfile}
             onSuccess={handleSuccess}
           />
@@ -97,7 +97,7 @@ const StaffManagement: React.FC<StaffManagementProps> = ({ onBack }) => {
                             onClick={handleBackToList}
                             className="bg-red-100 px-3 py-2 rounded-md text-sm font-medium text-red-800 hover:bg-red-200"
                           >
-                            Back to Staff List
+                            Back to Subject List
                           </button>
                         </div>
                       </div>
@@ -115,19 +115,19 @@ const StaffManagement: React.FC<StaffManagementProps> = ({ onBack }) => {
               <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center py-12">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                  <p className="mt-4 text-gray-600">Loading staff profile...</p>
+                  <p className="mt-4 text-gray-600">Loading subject profile...</p>
                 </div>
               </div>
             </div>
           );
         }
         
-        return selectedStaff ? (
+        return selectedSubject ? (
           <div className="bg-gray-50 py-8">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-              <StaffProfile
-                staff={selectedStaff}
-                onEdit={() => handleEditStaff(selectedStaff.id)}
+              <SubjectProfile
+                subject={selectedSubject}
+                onEdit={() => handleEditSubject(selectedSubject.id)}
                 onBack={handleBackToList}
               />
             </div>
@@ -145,13 +145,13 @@ const StaffManagement: React.FC<StaffManagementProps> = ({ onBack }) => {
                     </div>
                     <div className="ml-3">
                       <h3 className="text-sm font-medium text-yellow-800">No profile data</h3>
-                      <p className="mt-1 text-sm text-yellow-700">Unable to load staff profile information.</p>
+                      <p className="mt-1 text-sm text-yellow-700">Unable to load subject profile information.</p>
                       <div className="mt-4">
                         <button
                           onClick={handleBackToList}
                           className="bg-yellow-100 px-3 py-2 rounded-md text-sm font-medium text-yellow-800 hover:bg-yellow-200"
                         >
-                          Back to Staff List
+                          Back to Subject List
                         </button>
                       </div>
                     </div>
@@ -164,10 +164,10 @@ const StaffManagement: React.FC<StaffManagementProps> = ({ onBack }) => {
       
       default:
         return (
-          <StaffList
+          <SubjectList
             onViewProfile={handleViewProfile}
-            onEditStaff={handleEditStaff}
-            onAddStaff={handleAddStaff}
+            onEditSubject={handleEditSubject}
+            onAddSubject={handleAddSubject}
           />
         );
     }
@@ -180,4 +180,4 @@ const StaffManagement: React.FC<StaffManagementProps> = ({ onBack }) => {
   );
 };
 
-export default StaffManagement;
+export default SubjectManagement;

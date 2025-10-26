@@ -57,11 +57,11 @@ const StudentCard: React.FC<StudentCardProps> = ({ student, onViewProfile, onEdi
   };
 
   const getClassBadgeColor = (className: string) => {
-    if (className.includes('Grade 9')) return 'bg-green-100 text-green-800';
-    if (className.includes('Grade 10')) return 'bg-blue-100 text-blue-800';
-    if (className.includes('Grade 11')) return 'bg-yellow-100 text-yellow-800';
-    if (className.includes('Grade 12')) return 'bg-purple-100 text-purple-800';
-    return 'bg-gray-100 text-gray-800';
+    if (className.includes('Grade 9')) return 'bg-success-100 text-success-800';
+    if (className.includes('Grade 10')) return 'bg-primary-100 text-primary-800';
+    if (className.includes('Grade 11')) return 'bg-warning-100 text-warning-800';
+    if (className.includes('Grade 12')) return 'bg-accent-100 text-accent-800';
+    return 'bg-neutral-100 text-neutral-800';
   };
 
   return (
@@ -73,11 +73,11 @@ const StudentCard: React.FC<StudentCardProps> = ({ student, onViewProfile, onEdi
             <img
               src={student.profilePicture}
               alt={student.fullName}
-              className="w-16 h-16 rounded-full object-cover border-2 border-gray-200"
+              className="w-16 h-16 rounded-full object-cover border-2 border-neutral-200"
             />
           ) : (
-            <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
-              <svg className="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+            <div className="w-16 h-16 bg-neutral-200 rounded-full flex items-center justify-center">
+              <svg className="w-8 h-8 text-neutral-400" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
               </svg>
             </div>

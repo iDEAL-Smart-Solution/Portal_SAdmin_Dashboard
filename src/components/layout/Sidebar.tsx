@@ -62,15 +62,14 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange }) => {
       description: 'Create and manage classes'
     },
     {
-      id: 'schools',
-      name: 'Manage Schools',
+      id: 'subject',
+      name: 'Manage Subjects',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 011.414.414l5.586 5.586a1 1 0 01.414 1.414V19a2 2 0 01-2 2z" />
         </svg>
       ),
-      description: 'Coming soon - Manage multiple schools',
-      disabled: true
+      description: 'Create and manage subjects'
     }
   ];
 
@@ -79,11 +78,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange }) => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white border-r border-gray-200">
+    <div className="flex flex-col h-full bg-background-primary">
       {/* Header */}
-      <div className="flex items-center justify-center p-6 border-b border-gray-200">
+      <div className="flex items-center justify-center p-6 border-b border-neutral-200 flex-shrink-0">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100">
+          <div className="w-10 h-10 rounded-full overflow-hidden bg-neutral-100">
             <img
               src={logo}
               alt="iDEAL Smart Solution Limited Logo"
@@ -91,14 +90,14 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange }) => {
             />
           </div>
           <div className="text-center">
-            <h1 className="text-lg font-bold text-gray-900">School Admin</h1>
-            <p className="text-xs text-gray-500">iDEAL System</p>
+            <h1 className="text-lg font-bold text-text-primary">School Admin</h1>
+            <p className="text-xs text-text-tertiary">iDEAL System</p>
           </div>
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-4 py-6 space-y-2">
+      <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
         {navigationItems.map((item) => (
           <button
             key={item.id}
@@ -106,32 +105,32 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange }) => {
             disabled={item.disabled}
             className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors ${
               currentModule === item.id
-                ? 'bg-purple-100 text-purple-700 border border-purple-200'
+                ? 'bg-primary-50 text-primary-700 border border-primary-200 shadow-soft'
                 : item.disabled
-                ? 'text-gray-400 cursor-not-allowed'
-                : 'text-gray-700 hover:bg-gray-100'
+                ? 'text-neutral-400 cursor-not-allowed'
+                : 'text-text-secondary hover:bg-neutral-50'
             }`}
           >
             <div className={`flex-shrink-0 ${
-              currentModule === item.id ? 'text-purple-600' : 'text-gray-500'
+              currentModule === item.id ? 'text-primary-500' : 'text-neutral-500'
             }`}>
               {item.icon}
             </div>
             <div className="flex-1 min-w-0">
               <p className={`text-sm font-medium ${
-                item.disabled ? 'text-gray-400' : ''
+                item.disabled ? 'text-neutral-400' : ''
               }`}>
                 {item.name}
               </p>
-              <p className={`text-xs ${
-                item.disabled ? 'text-gray-400' : 'text-gray-500'
+              <p className={`text-xs hidden lg:block ${
+                item.disabled ? 'text-neutral-400' : 'text-text-tertiary'
               }`}>
                 {item.description}
               </p>
             </div>
             {item.disabled && (
               <div className="flex-shrink-0">
-                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-neutral-100 text-neutral-500">
                   Soon
                 </span>
               </div>
@@ -141,15 +140,15 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange }) => {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-4 border-t border-neutral-200 flex-shrink-0">
         <div className="text-center mb-4">
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-text-tertiary">
             Powered by iDEAL Smart Solution Limited
           </p>
         </div>
         <button
           onClick={handleLogout}
-          className="w-full flex items-center justify-center space-x-2 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+          className="w-full flex items-center justify-center space-x-2 px-4 py-2 text-sm font-medium text-accent-500 hover:bg-accent-50 rounded-lg transition-colors"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

@@ -78,7 +78,7 @@ const StudentManagement: React.FC<StudentManagementProps> = ({ onBack }) => {
       case 'profile':
         if (isLoading) {
           return (
-            <div className="min-h-screen bg-gray-50 py-8">
+            <div className="bg-gray-50 py-8">
               <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center py-12">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
@@ -91,7 +91,7 @@ const StudentManagement: React.FC<StudentManagementProps> = ({ onBack }) => {
 
         if (error) {
           return (
-            <div className="min-h-screen bg-gray-50 py-8">
+            <div className="bg-gray-50 py-8">
               <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="bg-red-50 border border-red-200 rounded-md p-4">
                   <div className="flex">
@@ -123,7 +123,7 @@ const StudentManagement: React.FC<StudentManagementProps> = ({ onBack }) => {
 
         if (!selectedStudent) {
           return (
-            <div className="min-h-screen bg-gray-50 py-8">
+            <div className="bg-gray-50 py-8">
               <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center py-12">
                   <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -146,7 +146,7 @@ const StudentManagement: React.FC<StudentManagementProps> = ({ onBack }) => {
         }
 
         return (
-          <div className="min-h-screen bg-gray-50 py-8">
+          <div className="bg-gray-50 py-8">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
               <StudentProfile
                 student={selectedStudent}
@@ -169,7 +169,7 @@ const StudentManagement: React.FC<StudentManagementProps> = ({ onBack }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="bg-gray-50">
       {renderCurrentView()}
     </div>
   );

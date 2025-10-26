@@ -1,12 +1,15 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
+import MobileBottomNav from "./MobileBottomNav";
+import MobileHeader from "./MobileHeader";
 import {
   Users,
   GraduationCap,
   BookOpen,
   Building2,
   Layers,
+  BookMarked,
 } from "lucide-react";
 
 interface LayoutProps {
@@ -23,56 +26,59 @@ const Layout: React.FC<LayoutProps> = ({
     staff: {
       title: "Staff Management",
       desc: "Manage staff members and their information",
-      icon: <Users className="h-6 w-6 text-blue-600" />,
+      icon: <Users className="h-6 w-6 text-primary-500" />,
     },
     student: {
       title: "Student Management",
       desc: "Manage student records and academic information",
-      icon: <GraduationCap className="h-6 w-6 text-blue-600" />,
+      icon: <GraduationCap className="h-6 w-6 text-primary-500" />,
     },
     academic: {
       title: "Academic Data Management",
       desc: "Manage academic sessions, data, and configuration",
-      icon: <BookOpen className="h-6 w-6 text-blue-600" />,
+      icon: <BookOpen className="h-6 w-6 text-primary-500" />,
     },
     class: {
       title: "Manage Classes",
       desc: "Create and manage classes, subjects, and student groups",
-      icon: <Layers className="h-6 w-6 text-blue-600" />,
+      icon: <Layers className="h-6 w-6 text-primary-500" />,
     },
-    schools: {
-      title: "School Management",
-      desc: "Manage multiple schools and their settings",
-      icon: <Building2 className="h-6 w-6 text-blue-600" />,
+    subject: {
+      title: "Subject Management",
+      desc: "Create and manage subjects and assignments",
+      icon: <BookMarked className="h-6 w-6 text-primary-500" />,
     },
   };
 
   const active = pageInfo[activeModule as keyof typeof pageInfo];
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <div className="w-72 flex-shrink-0 border-r bg-white shadow-sm">
+    <div className="flex h-full bg-background-secondary">
+      {/* Desktop Sidebar - Hidden on mobile */}
+      <div className="hidden md:block w-72 flex-shrink-0 border-r border-neutral-200 bg-background-primary shadow-soft h-full">
         <Sidebar activeModule={activeModule} onModuleChange={() => {}} />
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header className="bg-white border-b border-gray-200 px-6 py-4 shadow-sm">
+      <div className="flex-1 flex flex-col h-full overflow-hidden">
+        {/* Mobile Header */}
+        <MobileHeader />
+        
+        {/* Desktop Header */}
+        <header className="hidden md:block bg-background-primary border-b border-neutral-200 px-6 py-4 shadow-soft flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               {active?.icon}
               <div>
-                <h1 className="text-2xl font-semibold text-gray-900">
+                <h1 className="text-2xl font-semibold text-text-primary">
                   {active?.title}
                 </h1>
-                <p className="text-sm text-gray-600 mt-1">{active?.desc}</p>
+                <p className="text-sm text-text-secondary mt-1">{active?.desc}</p>
               </div>
             </div>
 
             {/* Date Display */}
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-text-tertiary">
               {new Date().toLocaleDateString("en-US", {
                 weekday: "long",
                 year: "numeric",
@@ -84,8 +90,11 @@ const Layout: React.FC<LayoutProps> = ({
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-auto p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-background-secondary pb-20 md:pb-6">{children}</main>
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav onModuleChange={() => {}} />
     </div>
   );
 };

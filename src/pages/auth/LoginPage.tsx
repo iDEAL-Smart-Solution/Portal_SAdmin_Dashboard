@@ -27,11 +27,11 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background-secondary flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         {/* Company Logo */}
         <div className="flex justify-center mb-8">
-          <div className="w-20 h-20 rounded-full overflow-hidden bg-white shadow-lg border-4 border-white">
+          <div className="w-20 h-20 rounded-full overflow-hidden bg-background-primary shadow-strong border-4 border-background-primary">
             <img
               src={logo}
               alt="iDEAL Smart Solution Limited Logo"
@@ -42,25 +42,25 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
         {/* Company Information */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-text-primary mb-2">
             School Admin Dashboard
           </h1>
-          <p className="text-lg text-gray-600 mb-1">
+          <p className="text-lg text-text-secondary mb-1">
             for iDEAL School Management System
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-text-tertiary">
             Powered by iDEAL Smart Solution Limited
           </p>
         </div>
       </div>
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-xl rounded-lg sm:px-10 border border-gray-200">
+        <div className="bg-background-primary py-8 px-4 shadow-strong rounded-2xl sm:px-10 border border-neutral-200">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-center text-gray-900 mb-2">
+            <h2 className="text-2xl font-bold text-center text-text-primary mb-2">
               Sign in to your account
             </h2>
-            <p className="text-center text-sm text-gray-600">
+            <p className="text-center text-sm text-text-secondary">
               Enter your credentials to access the admin dashboard
             </p>
           </div>
@@ -73,7 +73,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
           {/* Additional Information */}
           <div className="mt-6 text-center">
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-text-tertiary">
               Secure access to your school management system
             </p>
           </div>
@@ -81,10 +81,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
         {/* Footer */}
         <div className="mt-8 text-center">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-text-tertiary">
             © 2024 iDEAL Smart Solution Limited. All rights reserved.
           </p>
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-neutral-400 mt-1">
             School Management System v1.0
           </p>
         </div>
