@@ -50,8 +50,8 @@ const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent,
           bValue = b.fullName.toLowerCase();
           break;
         case 'uin':
-          aValue = a.UIN.toLowerCase();
-          bValue = b.UIN.toLowerCase();
+          aValue = a.uin.toLowerCase();
+          bValue = b.uin.toLowerCase();
           break;
         case 'email':
           aValue = a.email.toLowerCase();

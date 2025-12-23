@@ -73,7 +73,7 @@ export interface GetManyStudentResponse {
   email: string;
   className: string;
   gender: string;
-  UIN: string;
+  uin: string;
   profilePicture?: string;
   dateOfBirth: string;
   createdAt: string;

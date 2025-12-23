@@ -79,9 +79,9 @@ export default {
         },
         // Text colors
         text: {
-          primary: '#0f172a',
-          secondary: '#475569',
-          tertiary: '#64748b',
+          primary: '#0369a1', // Primary blue for headings
+          secondary: '#0284c7', // Lighter blue for subheadings
+          tertiary: '#38bdf8', // Blue for body text
           inverse: '#ffffff',
         }
       },

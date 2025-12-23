@@ -1,5 +1,6 @@
 import React from 'react';
 import { GetManyStudentResponse } from '../../types/student';
+import { FileBaseUrl } from '../../lib/axios';
 
 interface StudentCardProps {
   student: GetManyStudentResponse;
@@ -71,7 +72,7 @@ const StudentCard: React.FC<StudentCardProps> = ({ student, onViewProfile, onEdi
         <div className="flex-shrink-0">
           {student.profilePicture ? (
             <img
-              src={student.profilePicture}
+              src={`${FileBaseUrl}/${student.profilePicture.startsWith('/') ? student.profilePicture.slice(1) : student.profilePicture}`}
               alt={student.fullName}
               className="w-16 h-16 rounded-full object-cover border-2 border-neutral-200"
             />
@@ -109,7 +110,7 @@ const StudentCard: React.FC<StudentCardProps> = ({ student, onViewProfile, onEdi
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
               <span className="font-medium">UIN:</span>
-              <span className="ml-1">{student.UIN}</span>
+              <span className="ml-1">{student.uin}</span>
             </div>
 
             <div className="flex items-center text-sm text-gray-600">
