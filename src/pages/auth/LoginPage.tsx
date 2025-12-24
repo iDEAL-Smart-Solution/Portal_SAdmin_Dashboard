@@ -18,7 +18,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
     const credentials: LoginFormData = {
       UIN: uin,
-      Password: password,
+      password: password,
     };
 
     const result = await login(credentials);

@@ -1,5 +1,6 @@
 import React from 'react';
 import { GetManyStaffResponse } from '../../types/staff';
+import { FileBaseUrl } from '../../lib/axios';
 
 interface StaffCardProps {
   staff: GetManyStaffResponse;
@@ -42,10 +43,11 @@ const StaffCard: React.FC<StaffCardProps> = ({ staff, onViewProfile, onEdit }) =
     <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
       <div className="flex items-start space-x-4">
         {/* Profile Picture */}
+        
         <div className="flex-shrink-0">
           {staff.profilePicture ? (
             <img
-              src={staff.profilePicture}
+              src={`${FileBaseUrl}/${staff.profilePicture.startsWith('/') ? staff.profilePicture.slice(1) : staff.profilePicture}`}
               alt={staff.fullName}
               className="w-16 h-16 rounded-full object-cover border-2 border-gray-200"
             />

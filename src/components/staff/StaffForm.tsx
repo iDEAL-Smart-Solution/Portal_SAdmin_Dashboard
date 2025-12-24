@@ -73,6 +73,10 @@ const StaffForm: React.FC<StaffFormProps> = ({
       newErrors.password = 'Password is required';
     }
 
+    if (!isEdit && !formData.profilePicture) {
+      newErrors.profilePicture = 'Profile picture is required';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -109,7 +113,7 @@ const StaffForm: React.FC<StaffFormProps> = ({
         {/* Profile Picture Upload */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Profile Picture
+            Profile Picture {!isEdit && '*'}
           </label>
           <div className="flex items-center space-x-4">
             {formData.profilePicture && (
@@ -133,9 +137,14 @@ const StaffForm: React.FC<StaffFormProps> = ({
               type="file"
               accept="image/*"
               onChange={handleFileChange}
-              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              className={`block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 ${
+                errors.profilePicture ? 'border-red-500' : ''
+              }`}
             />
           </div>
+          {errors.profilePicture && (
+            <p className="mt-1 text-sm text-red-600">{errors.profilePicture}</p>
+          )}
         </div>
 
         {/* Name Fields */}
