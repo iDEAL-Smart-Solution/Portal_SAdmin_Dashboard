@@ -9,6 +9,9 @@ import StudentManagement from './pages/student/StudentManagement'
 import AcademicDataManagement from './pages/academic/AcademicDataManagement'
 import ClassManagement from './pages/class/ClassManagement'
 import SubjectManagement from './pages/subject/SubjectManagement'
+import ResourceTypeManagement from './pages/resource-type/ResourceTypeManagement'
+import TimetableTypeManagement from './pages/timetable-type/TimetableTypeManagement'
+import TimetableManagement from './pages/timetable/TimetableManagement'
 
 function AppContent() {
   const { isAuthenticated, user, isAdmin, error } = useAuthStore()
@@ -44,6 +47,9 @@ function AppContent() {
             <Route path="/student" element={<StudentManagement onBack={() => {}} />} />
             <Route path="/class" element={<ClassManagement onBack={() => {}} />} />
             <Route path="/subject" element={<SubjectManagement onBack={() => {}} />} />
+            <Route path="/resource-type" element={<ResourceTypeManagement />} />
+            <Route path="/timetable-type" element={<TimetableTypeManagement />} />
+            <Route path="/timetable" element={<TimetableManagement />} />
             <Route path="/" element={<Navigate to="/academic" replace />} />
             <Route path="*" element={<Navigate to="/academic" replace />} />
           </Routes>

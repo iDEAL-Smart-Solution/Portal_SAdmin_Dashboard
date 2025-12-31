@@ -51,11 +51,14 @@ export const useSubjectStore = create<SubjectState>((set, get) => ({
         throw new Error('School ID is required to fetch subjects');
       }
       
-      const response = await axiosInstance.get<GetManySubjectResponse[]>(`/Subject/${currentSchoolId}`);
-      set({ subjectList: response.data, isLoading: false });
+      const response = await axiosInstance.get(`/Subject/${currentSchoolId}`);
+      
+      // Handle the new response format { success: true, data: [...] }
+      const subjects = response.data.data || response.data;
+      set({ subjectList: Array.isArray(subjects) ? subjects : [], isLoading: false });
     } catch (error: any) {
-      const errorMessage = error.response?.data?.details || 
-                          error.response?.data?.message || 
+      const errorMessage = error.response?.data?.message || 
+                          error.response?.data?.details || 
                           error.message || 
                           'Failed to fetch subject list';
       set({ error: errorMessage, isLoading: false });
@@ -70,23 +73,24 @@ export const useSubjectStore = create<SubjectState>((set, get) => ({
         throw new Error('School ID is required to fetch subject details');
       }
       
-      const response = await axiosInstance.get<GetSingleSubjectResponse>(`/Subject/single/${id}/${schoolId}`);
+      const response = await axiosInstance.get(`/Subject/single/${id}/${schoolId}`);
       
-      // The backend returns the subject data directly
+      // Handle the new response format { success: true, data: {...} }
+      const subjectData = response.data.data || response.data;
       const normalizedSubject: GetSingleSubjectResponse = {
-        id: response.data.id,
-        name: response.data.name,
-        code: response.data.code,
-        description: response.data.description,
-        className: response.data.className,
-        staffId: response.data.staffId,
-        schoolId: response.data.schoolId
+        id: subjectData.id,
+        name: subjectData.name,
+        code: subjectData.code,
+        description: subjectData.description,
+        className: subjectData.className,
+        staffId: subjectData.staffId,
+        schoolId: subjectData.schoolId
       };
       
       set({ selectedSubject: normalizedSubject, isLoading: false });
     } catch (error: any) {
-      const errorMessage = error.response?.data?.details || 
-                          error.response?.data?.message || 
+      const errorMessage = error.response?.data?.message || 
+                          error.response?.data?.details || 
                           error.message || 
                           'Failed to fetch subject details';
       set({ error: errorMessage, isLoading: false });
@@ -96,11 +100,14 @@ export const useSubjectStore = create<SubjectState>((set, get) => ({
   fetchSubjectsByTeacher: async (staffId: string) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axiosInstance.get<GetManySubjectResponse[]>(`/Subject/by-teacher/${staffId}`);
-      set({ subjectList: response.data, isLoading: false });
+      const response = await axiosInstance.get(`/Subject/by-teacher/${staffId}`);
+      
+      // Handle the new response format { success: true, data: [...] }
+      const subjects = response.data.data || response.data;
+      set({ subjectList: Array.isArray(subjects) ? subjects : [], isLoading: false });
     } catch (error: any) {
-      const errorMessage = error.response?.data?.details || 
-                          error.response?.data?.message || 
+      const errorMessage = error.response?.data?.message || 
+                          error.response?.data?.details || 
                           error.message || 
                           'Failed to fetch subjects by teacher';
       set({ error: errorMessage, isLoading: false });
@@ -115,11 +122,14 @@ export const useSubjectStore = create<SubjectState>((set, get) => ({
       if (code) params.append('code', code);
       if (className) params.append('className', className);
       
-      const response = await axiosInstance.get<GetManySubjectResponse[]>(`/Subject/filter?${params.toString()}`);
-      set({ subjectList: response.data, isLoading: false });
+      const response = await axiosInstance.get(`/Subject/filter?${params.toString()}`);
+      
+      // Handle the new response format { success: true, data: [...] }
+      const subjects = response.data.data || response.data;
+      set({ subjectList: Array.isArray(subjects) ? subjects : [], isLoading: false });
     } catch (error: any) {
-      const errorMessage = error.response?.data?.details || 
-                          error.response?.data?.message || 
+      const errorMessage = error.response?.data?.message || 
+                          error.response?.data?.details || 
                           error.message || 
                           'Failed to fetch subjects by filter';
       set({ error: errorMessage, isLoading: false });
@@ -168,16 +178,23 @@ export const useSubjectStore = create<SubjectState>((set, get) => ({
   createSubject: async (subjectData: CreateSubjectRequest) => {
     set({ isLoading: true, error: null });
     try {
-      await axiosInstance.post('/Subject', subjectData);
+      const response = await axiosInstance.post('/Subject', subjectData);
       
-      // Refresh the subject list after successful creation
+      // Only refresh list and set loading false on SUCCESS
       await get().fetchSubjectList(subjectData.schoolId);
+      set({ isLoading: false });
+      
+      return response.data;
     } catch (error: any) {
-      const errorMessage = error.response?.data?.details || 
-                          error.response?.data?.message || 
+      const errorMessage = error.response?.data?.message || 
+                          error.response?.data?.error ||
+                          error.response?.data?.details || 
                           error.message || 
                           'Failed to create subject';
       set({ error: errorMessage, isLoading: false });
+      
+      // RE-THROW the error so the form knows it failed
+      throw new Error(errorMessage);
     }
   },
 

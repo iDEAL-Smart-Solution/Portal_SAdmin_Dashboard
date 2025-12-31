@@ -82,14 +82,28 @@ const AddSubject: React.FC<AddSubjectProps> = ({ onBack, onSuccess }) => {
         throw new Error('School ID is required to create subject');
       }
       
+      // Find the selected class to get its ID
+      const selectedClass = classOptions.find(c => c.name === formData.className);
+      if (!selectedClass) {
+        throw new Error('Selected class not found');
+      }
+      
       await createSubject({
-        ...formData,
+        name: formData.name,
+        code: formData.code,
+        description: formData.description,
+        className: formData.className,
+        classId: selectedClass.id,
+        staffId: formData.staffId,
         schoolId
       });
       
+      // Only call onSuccess if createSubject didn't throw an error
       onSuccess();
-    } catch (error) {
-      console.error('Failed to create subject:', error);
+    } catch (error: any) {
+      // Error is already set in the store, just log it
+      console.error('Failed to create subject:', error.message || error);
+      // DO NOT call onSuccess() - keep form open with error displayed
     }
   };
 

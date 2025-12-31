@@ -47,7 +47,9 @@ export interface GetManySubjectResponse {
   code: string;
   description: string;
   className: string;
+  classId: string;
   staffId: string;
+  staffName?: string;
   schoolId: string;
 }
 
@@ -57,7 +59,9 @@ export interface GetSingleSubjectResponse {
   code: string;
   description: string;
   className: string;
+  classId: string;
   staffId: string;
+  staffName?: string;
   schoolId: string;
 }
 
