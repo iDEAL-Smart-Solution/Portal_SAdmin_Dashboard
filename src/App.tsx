@@ -12,6 +12,10 @@ import SubjectManagement from './pages/subject/SubjectManagement'
 import ResourceTypeManagement from './pages/resource-type/ResourceTypeManagement'
 import TimetableTypeManagement from './pages/timetable-type/TimetableTypeManagement'
 import TimetableManagement from './pages/timetable/TimetableManagement'
+import PaymentPage from './pages/payment'
+import PaymentTypeManagement from './pages/payment-type'
+import PaymentVerification from './pages/payment-verification'
+import SystemConfigManagement from './pages/system-config'
 
 function AppContent() {
   const { isAuthenticated, user, isAdmin, error } = useAuthStore()
@@ -50,6 +54,10 @@ function AppContent() {
             <Route path="/resource-type" element={<ResourceTypeManagement />} />
             <Route path="/timetable-type" element={<TimetableTypeManagement />} />
             <Route path="/timetable" element={<TimetableManagement />} />
+            <Route path="/payment" element={<PaymentPage />} />
+            <Route path="/payment-type" element={<PaymentTypeManagement />} />
+            <Route path="/payment-verification" element={<PaymentVerification />} />
+            <Route path="/system-config" element={<SystemConfigManagement />} />
             <Route path="/" element={<Navigate to="/academic" replace />} />
             <Route path="*" element={<Navigate to="/academic" replace />} />
           </Routes>
