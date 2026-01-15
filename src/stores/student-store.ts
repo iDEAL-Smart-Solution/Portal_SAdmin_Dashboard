@@ -77,7 +77,7 @@ export const useStudentStore = create<StudentState>((set, get) => ({
         classId: '', // Default empty since not in API response
         address: studentData.address,
         gender: studentData.gender,
-        UIN: studentData.UIN,
+        uin: studentData.UIN,
         profilePicture: '', // Default empty since not in API response
         createdAt: new Date().toISOString(), // Default current time
         updatedAt: new Date().toISOString() // Default current time
@@ -113,7 +113,7 @@ export const useStudentStore = create<StudentState>((set, get) => ({
         classId: '', // Default empty since not in API response
         address: studentData.address,
         gender: studentData.gender,
-        UIN: studentData.UIN,
+        uin: studentData.UIN,
         profilePicture: '', // Default empty since not in API response
         createdAt: new Date().toISOString(), // Default current time
         updatedAt: new Date().toISOString() // Default current time
