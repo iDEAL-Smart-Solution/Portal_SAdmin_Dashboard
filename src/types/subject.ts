@@ -14,6 +14,7 @@ export interface CreateSubjectRequest {
   code: string;
   description: string;
   className: string;
+  classId: string;
   staffId: string;
   schoolId: string;
 }

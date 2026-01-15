@@ -83,6 +83,7 @@ export const useSubjectStore = create<SubjectState>((set, get) => ({
         code: subjectData.code,
         description: subjectData.description,
         className: subjectData.className,
+        classId: subjectData.classId || '',
         staffId: subjectData.staffId,
         schoolId: subjectData.schoolId
       };
