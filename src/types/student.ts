@@ -43,7 +43,7 @@ export interface StudentApiResponse {
     address: string;
     phonenumber: string; // Note: backend has both phoneNumber and phonenumber
     gender: string;
-    UIN: string;
+    uin: string;
     // Note: firstName, lastName, middleName, classId, profilePicture, createdAt, updatedAt are not in the API response
   };
 }
