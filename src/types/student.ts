@@ -61,7 +61,7 @@ export interface GetSingleStudentResponse {
   classId: string;
   address: string;
   gender: string;
-  UIN: string;
+  uin: string;
   profilePicture?: string;
   createdAt: string;
   updatedAt: string;

@@ -142,7 +142,7 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ student, onEdit, onBack
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
                 <span className="font-medium">UIN:</span>
-                <span className="ml-2">{student.UIN}</span>
+                <span className="ml-2">{student.uin}</span>
               </div>
               
               <div className="flex items-center">
@@ -216,7 +216,7 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ student, onEdit, onBack
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Student UIN</label>
-                <p className="text-gray-900 font-mono">{student.UIN}</p>
+                <p className="text-gray-900 font-mono">{student.uin}</p>
               </div>
               
               <div>
@@ -262,7 +262,7 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ student, onEdit, onBack
               <div className="text-sm text-gray-600">Current Class</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">{student.UIN}</div>
+              <div className="text-2xl font-bold text-purple-600">{student.uin}</div>
               <div className="text-sm text-gray-600">Student ID</div>
             </div>
           </div>
