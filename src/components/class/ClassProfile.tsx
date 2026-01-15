@@ -1,5 +1,6 @@
 import React from 'react';
 import { GetAClassResponse, ClassStudent, ClassSubject } from '../../types/class';
+import { FileBaseUrl } from '../../lib/axios';
 
 interface ClassProfileProps {
   classData: GetAClassResponse;
@@ -71,7 +72,7 @@ const ClassProfile: React.FC<ClassProfileProps> = ({ classData, onEdit }) => {
                     <div className="flex-shrink-0">
                       {student.profilePicture ? (
                         <img
-                          src={student.profilePicture}
+                          src={`${FileBaseUrl}/${student.profilePicture.startsWith('/') ? student.profilePicture.slice(1) : student.profilePicture}`}
                           alt={student.name}
                           className="w-10 h-10 rounded-full object-cover"
                         />

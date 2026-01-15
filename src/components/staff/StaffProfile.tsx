@@ -1,5 +1,6 @@
 import React from 'react';
 import { GetSingleStaffResponse } from '../../types/staff';
+import { FileBaseUrl } from '../../lib/axios';
 
 interface StaffProfileProps {
   staff: GetSingleStaffResponse;
@@ -81,7 +82,7 @@ const StaffProfile: React.FC<StaffProfileProps> = ({ staff, onEdit, onBack }) =>
           <div className="flex-shrink-0">
             {staff.profilePicture ? (
               <img
-                src={staff.profilePicture}
+                src={`${FileBaseUrl}/${staff.profilePicture.startsWith('/') ? staff.profilePicture.slice(1) : staff.profilePicture}`}
                 alt={staff.fullName}
                 className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
               />
