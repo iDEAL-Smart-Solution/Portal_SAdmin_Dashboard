@@ -4,16 +4,12 @@ import { useAcademicStore } from '../../stores/academic-store';
 
 interface UpdateSessionDatesProps {
   sessionId: string;
-  currentEndDate?: string;
-  nextBeginDate?: string;
   onSuccess: () => void;
   onBack: () => void;
 }
 
 const UpdateSessionDates: React.FC<UpdateSessionDatesProps> = ({
   sessionId,
-  currentEndDate,
-  nextBeginDate,
   onSuccess,
   onBack
 }) => {
