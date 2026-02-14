@@ -16,6 +16,8 @@ import PaymentPage from './pages/payment'
 import PaymentTypeManagement from './pages/payment-type'
 import PaymentVerification from './pages/payment-verification'
 import SystemConfigManagement from './pages/system-config'
+import ResultManagement from './pages/result'
+import RemarkTemplateManagement from './pages/remark-templates/RemarkTemplateManagement'
 
 function AppContent() {
   const { isAuthenticated, user, isAdmin, error } = useAuthStore()
@@ -51,6 +53,8 @@ function AppContent() {
             <Route path="/student" element={<StudentManagement onBack={() => {}} />} />
             <Route path="/class" element={<ClassManagement onBack={() => {}} />} />
             <Route path="/subject" element={<SubjectManagement onBack={() => {}} />} />
+            <Route path="/result" element={<ResultManagement />} />
+            <Route path="/remark-templates" element={<RemarkTemplateManagement />} />
             <Route path="/resource-type" element={<ResourceTypeManagement />} />
             <Route path="/timetable-type" element={<TimetableTypeManagement />} />
             <Route path="/timetable" element={<TimetableManagement />} />

@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { 
   UpdateAcademicSessionRequest, 
   UpdateTermRequest,
+  UpdateAcademicSessionDatesRequest,
   GetAcademicSessionResponse,
   AcademicSessionApiResponse,
   BrandingFormData,
@@ -21,6 +22,7 @@ interface AcademicState {
   // Actions
   fetchCurrentSession: () => Promise<void>;
   updateAcademicSession: (sessionData: UpdateAcademicSessionRequest) => Promise<void>;
+  updateSessionDates: (datesData: UpdateAcademicSessionDatesRequest) => Promise<{ success: boolean; message: string }>;
   updateCurrentTerm: (termData: UpdateTermRequest) => Promise<void>;
   updateBranding: (brandingData: UpdateBrandingRequest) => Promise<void>;
   migrateToNextSession: () => Promise<void>;
@@ -111,7 +113,9 @@ export const useAcademicStore = create<AcademicState>((set, get) => ({
       const backendRequest = {
         Id: sessionData.Id,
         Current_Session: sessionData.Current_Session,
-        Current_Term: convertTermToNumber(sessionData.Current_Term)
+        Current_Term: convertTermToNumber(sessionData.Current_Term),
+        NextTermBeginsOn: sessionData.NextTermBeginsOn,
+        CurrentTermEndsOn: sessionData.CurrentTermEndsOn
       };
       
       await axiosInstance.put('/AcademicSession/update-session', backendRequest);
@@ -134,6 +138,35 @@ export const useAcademicStore = create<AcademicState>((set, get) => ({
         error: errorMessage,
         isLoading: false 
       });
+    }
+  },
+
+  updateSessionDates: async (datesData: UpdateAcademicSessionDatesRequest) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await axiosInstance.put('/AcademicSession/update-session-dates', datesData);
+      
+      // Refresh current session after update
+      await get().fetchCurrentSession();
+      
+      set({ isLoading: false });
+      return { success: true, message: response.data.message || 'Dates updated successfully' };
+    } catch (error: any) {
+      let errorMessage = 'Failed to update session dates';
+      
+      if (error.response?.data?.details) {
+        errorMessage = error.response.data.details;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      set({ 
+        error: errorMessage,
+        isLoading: false 
+      });
+      return { success: false, message: errorMessage };
     }
   },
 

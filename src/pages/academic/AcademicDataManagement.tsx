@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import AcademicDataList from './AcademicDataList';
 import UpdateAcademicSession from './UpdateAcademicSession';
 import UpdateBranding from './UpdateBranding';
+import UpdateSessionDates from './UpdateSessionDates';
 
-type AcademicView = 'list' | 'edit' | 'branding';
+type AcademicView = 'list' | 'edit' | 'branding' | 'dates';
 
 interface AcademicDataManagementProps {
   onBack?: () => void;
@@ -20,6 +21,9 @@ const AcademicDataManagement: React.FC<AcademicDataManagementProps> = () => {
     setCurrentView('branding');
   };
 
+  const handleUpdateDates = () => {
+    setCurrentView('dates');
+  };
 
   const handleBackToList = () => {
     setCurrentView('list');
@@ -36,6 +40,7 @@ const AcademicDataManagement: React.FC<AcademicDataManagementProps> = () => {
           <AcademicDataList
             onEditSession={handleEditSession}
             onUpdateBranding={handleUpdateBranding}
+            onUpdateDates={handleUpdateDates}
           />
         );
       
@@ -56,11 +61,21 @@ const AcademicDataManagement: React.FC<AcademicDataManagementProps> = () => {
           />
         );
       
+      case 'dates':
+        return (
+          <UpdateSessionDates
+            sessionId="current"
+            onBack={handleBackToList}
+            onSuccess={handleSuccess}
+          />
+        );
+      
       default:
         return (
           <AcademicDataList
             onEditSession={handleEditSession}
             onUpdateBranding={handleUpdateBranding}
+            onUpdateDates={handleUpdateDates}
           />
         );
     }

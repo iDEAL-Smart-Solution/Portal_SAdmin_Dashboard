@@ -18,7 +18,9 @@ const AcademicSessionForm: React.FC<AcademicSessionFormProps> = ({
 }) => {
   const [formData, setFormData] = useState<AcademicSessionFormData>({
     Current_Session: '',
-    Current_Term: Term.first
+    Current_Term: Term.first,
+    NextTermBeginsOn: '',
+    CurrentTermEndsOn: ''
   });
 
   const [errors, setErrors] = useState<Partial<Record<keyof AcademicSessionFormData, string>>>({});
@@ -122,7 +124,37 @@ const AcademicSessionForm: React.FC<AcademicSessionFormProps> = ({
             <p className="mt-1 text-sm text-red-600">{errors.Current_Term}</p>
           )}
         </div>
+        {/* Current Term Ends On */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Current Term Ends On
+          </label>
+          <input
+            type="date"
+            value={formData.CurrentTermEndsOn || ''}
+            onChange={(e) => handleInputChange('CurrentTermEndsOn', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
+          <p className="mt-1 text-sm text-gray-500">
+            When does the current term end?
+          </p>
+        </div>
 
+        {/* Next Term Begins On */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Next Term Begins On
+          </label>
+          <input
+            type="date"
+            value={formData.NextTermBeginsOn || ''}
+            onChange={(e) => handleInputChange('NextTermBeginsOn', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
+          <p className="mt-1 text-sm text-gray-500">
+            When does the next term begin?
+          </p>
+        </div>
         {/* Session Preview */}
         <div className="bg-gray-50 rounded-lg p-4">
           <h3 className="text-sm font-medium text-gray-700 mb-2">Session Preview</h3>

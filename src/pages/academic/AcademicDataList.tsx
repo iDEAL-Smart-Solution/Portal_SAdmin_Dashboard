@@ -7,11 +7,13 @@ import { Term } from '../../types/academic';
 interface AcademicDataListProps {
   onEditSession: () => void;
   onUpdateBranding: () => void;
+  onUpdateDates: () => void;
 }
 
 const AcademicDataList: React.FC<AcademicDataListProps> = ({ 
   onEditSession, 
-  onUpdateBranding
+  onUpdateBranding,
+  onUpdateDates
 }) => {
   const { 
     currentSession, 
@@ -143,6 +145,7 @@ const AcademicDataList: React.FC<AcademicDataListProps> = ({
             session={currentSession}
             onUpdateSession={onEditSession}
             onUpdateBranding={onUpdateBranding}
+            onUpdateDates={onUpdateDates}
           />
 
           {/* Term Selector */}

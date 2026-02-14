@@ -39,6 +39,14 @@ export interface UpdateAcademicSessionRequest {
   Id: string;
   Current_Session: string;
   Current_Term: Term;
+  NextTermBeginsOn?: string;
+  CurrentTermEndsOn?: string;
+}
+
+export interface UpdateAcademicSessionDatesRequest {
+  Id: string;
+  NextTermBeginsOn?: string;
+  CurrentTermEndsOn?: string;
 }
 
 export interface UpdateTermRequest {
@@ -65,6 +73,8 @@ export interface GetAcademicSessionResponse {
   Current_Term: Term;
   SchoolName?: string;
   SchoolLogoFilePath?: string;
+  NextTermBeginsOn?: string;
+  CurrentTermEndsOn?: string;
   IsActive: boolean;
   CreatedAt: string;
   UpdatedAt: string;
@@ -73,6 +83,8 @@ export interface GetAcademicSessionResponse {
 export interface AcademicSessionFormData {
   Current_Session: string;
   Current_Term: Term;
+  NextTermBeginsOn?: string;
+  CurrentTermEndsOn?: string;
 }
 
 export interface BrandingFormData {

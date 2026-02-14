@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useAuthStore } from '../../stores/auth-store';
 import { LoginFormData } from '../../types/auth';
-import logo from '../../assets/logo.jpg';
 
 interface LoginPageProps {
   onLoginSuccess: () => void;
@@ -32,9 +31,9 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
           <img 
-            src={logo} 
+            src="/logo.png" 
             alt="iDEAL Smart Solution Limited" 
-            className="w-16 h-16 object-contain"
+            className="h-16 w-auto object-contain"
           />
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">

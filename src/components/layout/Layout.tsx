@@ -9,6 +9,7 @@ import {
   BookOpen,
   Layers,
   BookMarked,
+  MessageSquare,
 } from "lucide-react";
 
 interface LayoutProps {
@@ -46,6 +47,11 @@ const Layout: React.FC<LayoutProps> = ({
       title: "Subject Management",
       desc: "Create and manage subjects and assignments",
       icon: <BookMarked className="h-6 w-6 text-primary-500" />,
+    },
+    'remark-templates': {
+      title: "Remark Templates",
+      desc: "Manage principal remark templates for report cards",
+      icon: <MessageSquare className="h-6 w-6 text-primary-500" />,
     },
   };
 

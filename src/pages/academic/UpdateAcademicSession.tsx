@@ -32,7 +32,9 @@ const UpdateAcademicSession: React.FC<UpdateAcademicSessionProps> = ({
       const updateRequest: UpdateAcademicSessionRequest = {
         Id: currentSession?.Id || '1',
         Current_Session: formData.Current_Session,
-        Current_Term: formData.Current_Term
+        Current_Term: formData.Current_Term,
+        CurrentTermEndsOn: formData.CurrentTermEndsOn,
+        NextTermBeginsOn: formData.NextTermBeginsOn
       };
 
       await updateAcademicSession(updateRequest);
@@ -54,7 +56,9 @@ const UpdateAcademicSession: React.FC<UpdateAcademicSessionProps> = ({
     
     return {
       Current_Session: currentSession.Current_Session,
-      Current_Term: currentSession.Current_Term
+      Current_Term: currentSession.Current_Term,
+      CurrentTermEndsOn: currentSession.CurrentTermEndsOn?.split('T')[0],
+      NextTermBeginsOn: currentSession.NextTermBeginsOn?.split('T')[0]
     };
   };
 
