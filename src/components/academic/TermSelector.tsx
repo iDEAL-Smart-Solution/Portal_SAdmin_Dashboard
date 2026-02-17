@@ -13,24 +13,12 @@ const TermSelector: React.FC<TermSelectorProps> = ({
   isLoading = false 
 }) => {
   const getTermOptions = () => {
-    return Object.values(Term).map(term => ({
-      value: term,
-      label: `${term} Term`
+    return Object.values(Term).map(value => ({
+      value,
+      label: `${value} Term`
     }));
   };
 
-  const getTermBadgeColor = (term: Term) => {
-    switch (term) {
-      case Term.first:
-        return 'bg-green-100 text-green-800 border-green-200';
-      case Term.second:
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case Term.third:
-        return 'bg-purple-100 text-purple-800 border-purple-200';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
