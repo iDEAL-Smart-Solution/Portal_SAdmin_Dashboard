@@ -54,6 +54,46 @@ const Layout: React.FC<LayoutProps> = ({
       desc: "Manage principal remark templates for report cards",
       icon: <MessageSquare className="h-6 w-6 text-primary-500" />,
     },
+    'result': {
+      title: "Result Management",
+      desc: "Manage student results and performance records",
+      icon: <GraduationCap className="h-6 w-6 text-primary-500" />,
+    },
+    'resource-type': {
+      title: "Resource Type Management",
+      desc: "Manage resource types for your school",
+      icon: <BookOpen className="h-6 w-6 text-primary-500" />,
+    },
+    'timetable-type': {
+      title: "Timetable Type Management",
+      desc: "Manage timetable types for scheduling",
+      icon: <Layers className="h-6 w-6 text-primary-500" />,
+    },
+    'timetable': {
+      title: "Timetable Management",
+      desc: "Create and manage class timetables",
+      icon: <Layers className="h-6 w-6 text-primary-500" />,
+    },
+    'payment-type': {
+      title: "Payment Type Management",
+      desc: "Manage payment types and categories",
+      icon: <BookMarked className="h-6 w-6 text-primary-500" />,
+    },
+    'payment': {
+      title: "Payment Management",
+      desc: "Manage payments and transactions",
+      icon: <BookMarked className="h-6 w-6 text-primary-500" />,
+    },
+    'payment-verification': {
+      title: "Verify Payment",
+      desc: "Verify and review payment records",
+      icon: <BookMarked className="h-6 w-6 text-primary-500" />,
+    },
+    'system-config': {
+      title: "System Configuration",
+      desc: "Manage system-wide configuration settings",
+      icon: <MessageSquare className="h-6 w-6 text-primary-500" />,
+    },
   };
 
   const active = pageInfo[activeModule as keyof typeof pageInfo];
