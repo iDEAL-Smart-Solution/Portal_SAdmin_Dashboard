@@ -127,12 +127,11 @@ const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent,
           <button
             onClick={onAddStudent}
             className="inline-flex items-center px-3 py-2 sm:px-4 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200"
+            aria-label="Add Student"
           >
-            <svg className="w-4 h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
-            <span className="hidden sm:inline">Add New Student</span>
-            <span className="sm:hidden">Add Student</span>
           </button>
         </div>
       </div>

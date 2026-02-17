@@ -34,14 +34,9 @@ const TermSelector: React.FC<TermSelectorProps> = ({
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h3 className="text-lg font-medium text-gray-900">Current Term</h3>
-          <p className="text-sm text-gray-600">Select the current academic term</p>
-        </div>
-        <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getTermBadgeColor(currentTerm)}`}>
-          {currentTerm} Term
-        </div>
+      <div className="mb-4">
+        <h3 className="text-lg font-medium text-gray-900">Current Term</h3>
+        <p className="text-sm text-gray-600">Select the current academic term</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">

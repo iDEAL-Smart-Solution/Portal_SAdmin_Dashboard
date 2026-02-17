@@ -66,19 +66,19 @@ const StudentCard: React.FC<StudentCardProps> = ({ student, onViewProfile, onEdi
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
-      <div className="flex items-start space-x-4">
+    <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-3 sm:p-6 w-full">
+      <div className="flex flex-col sm:flex-row items-start sm:space-x-4 space-y-3 sm:space-y-0 w-full">
         {/* Profile Picture */}
         <div className="flex-shrink-0">
           {student.profilePicture ? (
             <img
               src={`${FileBaseUrl}/${student.profilePicture.startsWith('/') ? student.profilePicture.slice(1) : student.profilePicture}`}
               alt={student.fullName}
-              className="w-16 h-16 rounded-full object-cover border-2 border-neutral-200"
+              className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-neutral-200"
             />
           ) : (
-            <div className="w-16 h-16 bg-neutral-200 rounded-full flex items-center justify-center">
-              <svg className="w-8 h-8 text-neutral-400" fill="currentColor" viewBox="0 0 20 20">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-neutral-200 rounded-full flex items-center justify-center">
+              <svg className="w-6 h-6 sm:w-8 sm:h-8 text-neutral-400" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
               </svg>
             </div>
@@ -86,17 +86,17 @@ const StudentCard: React.FC<StudentCardProps> = ({ student, onViewProfile, onEdi
         </div>
 
         {/* Student Information */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 truncate">
+        <div className="flex-1 min-w-0 w-full">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full">
+            <div className="w-full">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate break-all whitespace-normal">
                 {student.fullName}
               </h3>
-              <p className="text-sm text-gray-600 truncate">
+              <p className="text-xs sm:text-sm text-gray-600 truncate break-all whitespace-normal">
                 {student.email}
               </p>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-row sm:flex-col items-center sm:items-end space-x-2 sm:space-x-0 sm:space-y-2 mt-2 sm:mt-0">
               {getGenderIcon(student.gender)}
               <span className="text-xs text-gray-500 capitalize">
                 {student.gender}
@@ -104,7 +104,7 @@ const StudentCard: React.FC<StudentCardProps> = ({ student, onViewProfile, onEdi
             </div>
           </div>
 
-          <div className="mt-3 space-y-2">
+          <div className="mt-2 sm:mt-3 space-y-1 sm:space-y-2">
             <div className="flex items-center text-sm text-gray-600">
               <svg className="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />

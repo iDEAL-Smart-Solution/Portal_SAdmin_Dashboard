@@ -63,6 +63,8 @@ export interface AcademicSessionApiResponse {
     current_Term: number; // 1, 2, 3
     schoolLogoFilePath: string | null;
     schoolName: string;
+    nextTermBeginsOn: string | null;
+    currentTermEndsOn: string | null;
   };
 }
 

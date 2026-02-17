@@ -63,6 +63,8 @@ export const useAcademicStore = create<AcademicState>((set, get) => ({
         Current_Term: convertNumberToTerm(sessionData.current_Term),
         SchoolName: sessionData.schoolName,
         SchoolLogoFilePath: sessionData.schoolLogoFilePath || undefined,
+        NextTermBeginsOn: sessionData.nextTermBeginsOn || undefined,
+        CurrentTermEndsOn: sessionData.currentTermEndsOn || undefined,
         IsActive: true, // Default to true since this is the current session
         CreatedAt: new Date().toISOString(), // Backend doesn't provide this
         UpdatedAt: new Date().toISOString()  // Backend doesn't provide this

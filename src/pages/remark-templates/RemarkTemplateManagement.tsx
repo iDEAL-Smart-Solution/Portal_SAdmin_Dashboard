@@ -103,7 +103,7 @@ const RemarkTemplateManagement: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
         <div>
           <h2 className="text-xl font-semibold text-gray-900">Principal Remark Templates</h2>
           <p className="text-sm text-gray-500 mt-1">
@@ -111,7 +111,7 @@ const RemarkTemplateManagement: React.FC = () => {
             These remarks appear on report cards.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-row gap-2 mt-3 sm:mt-0">
           {templates.length === 0 && (
             <button
               onClick={handleLoadDefaults}

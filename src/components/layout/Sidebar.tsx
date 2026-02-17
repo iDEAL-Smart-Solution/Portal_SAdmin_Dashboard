@@ -8,7 +8,7 @@ interface SidebarProps {
   onModuleChange: (module: string) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = () => {
+const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange }) => {
   const { logout } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
@@ -18,6 +18,9 @@ const Sidebar: React.FC<SidebarProps> = () => {
 
   const handleModuleChange = (moduleId: string) => {
     navigate(`/${moduleId}`);
+    if (onModuleChange) {
+      onModuleChange(moduleId);
+    }
   };
 
   const navigationItems = [

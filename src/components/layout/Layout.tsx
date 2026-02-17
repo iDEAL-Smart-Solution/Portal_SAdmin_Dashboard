@@ -1,8 +1,8 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
-import MobileBottomNav from "./MobileBottomNav";
 import MobileHeader from "./MobileHeader";
+import { useState } from "react";
 import {
   Users,
   GraduationCap,
@@ -20,6 +20,7 @@ const Layout: React.FC<LayoutProps> = ({
   children,
 }) => {
   const location = useLocation();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const activeModule = location.pathname.substring(1) || 'academic';
   // Dynamic page title & description for better clarity
   const pageInfo = {
@@ -59,16 +60,24 @@ const Layout: React.FC<LayoutProps> = ({
 
   return (
     <div className="flex h-full bg-background-secondary">
-      {/* Desktop Sidebar - Hidden on mobile */}
-      <div className="hidden md:block w-72 flex-shrink-0 border-r border-neutral-200 bg-background-primary shadow-soft h-full">
-        <Sidebar activeModule={activeModule} onModuleChange={() => {}} />
+      {/* Sidebar: fixed on desktop, toggleable drawer on mobile */}
+      <div>
+        {/* Overlay for mobile sidebar */}
+        <div
+          className={`fixed inset-0 z-40 bg-black bg-opacity-30 transition-opacity md:hidden ${sidebarOpen ? 'block' : 'hidden'}`}
+          onClick={() => setSidebarOpen(false)}
+        />
+        <div
+          className={`fixed z-50 top-0 left-0 h-full w-64 bg-background-primary border-r border-neutral-200 shadow-soft transform transition-transform duration-200 md:static md:translate-x-0 md:block ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:w-72 md:flex-shrink-0`}
+        >
+          <Sidebar activeModule={activeModule} onModuleChange={() => setSidebarOpen(false)} />
+        </div>
       </div>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col h-full overflow-hidden">
-        {/* Mobile Header */}
-        <MobileHeader />
-        
+        {/* Mobile Header with sidebar toggle */}
+        <MobileHeader onSidebarToggle={() => setSidebarOpen((v) => !v)} />
         {/* Desktop Header */}
         <header className="hidden md:block bg-background-primary border-b border-neutral-200 px-6 py-4 shadow-soft flex-shrink-0">
           <div className="flex items-center justify-between">
@@ -81,7 +90,6 @@ const Layout: React.FC<LayoutProps> = ({
                 <p className="text-sm text-text-secondary mt-1">{active?.desc}</p>
               </div>
             </div>
-
             {/* Date Display */}
             <div className="text-sm text-text-tertiary">
               {new Date().toLocaleDateString("en-US", {
@@ -93,13 +101,9 @@ const Layout: React.FC<LayoutProps> = ({
             </div>
           </div>
         </header>
-
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-background-secondary pb-20 md:pb-6">{children}</main>
       </div>
-
-      {/* Mobile Bottom Navigation */}
-      <MobileBottomNav onModuleChange={() => {}} />
     </div>
   );
 };

@@ -37,11 +37,11 @@ export default function PaymentTypeManagement() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-text-primary">Payment Types</h1>
-          <p className="text-text-secondary">Manage payment categories and amounts</p>
-        </div>
+      <div>
+        <h1 className="text-3xl font-bold text-text-primary">Payment Types</h1>
+        <p className="text-text-secondary">Manage payment categories and amounts</p>
+      </div>
+      <div className="flex justify-end">
         <button
           onClick={() => setIsCreateModalOpen(true)}
           className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors flex items-center gap-2"

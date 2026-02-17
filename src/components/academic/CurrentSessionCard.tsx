@@ -149,20 +149,20 @@ const CurrentSessionCard: React.FC<CurrentSessionCardProps> = ({
 
         {/* Action Buttons */}
         <div className="flex justify-between items-center pt-4 border-t">
-          <div className="flex space-x-3">
+          <div className="flex flex-col sm:flex-row w-full gap-2 sm:gap-3">
             <button
               onClick={onUpdateSession}
-              className="inline-flex items-center px-4 py-2 border border-neutral-300 shadow-sm text-sm leading-4 font-medium rounded-md text-text-secondary bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+              className="inline-flex items-center justify-center px-3 py-2 border border-neutral-300 shadow-sm text-xs sm:text-sm leading-4 font-medium rounded-md text-text-secondary bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 w-full sm:w-auto"
             >
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
               Update Session
             </button>
-            
+
             <button
               onClick={onUpdateBranding}
-              className="inline-flex items-center px-4 py-2 border border-neutral-300 shadow-sm text-sm leading-4 font-medium rounded-md text-text-secondary bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+              className="inline-flex items-center justify-center px-3 py-2 border border-neutral-300 shadow-sm text-xs sm:text-sm leading-4 font-medium rounded-md text-text-secondary bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 w-full sm:w-auto"
             >
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -172,7 +172,7 @@ const CurrentSessionCard: React.FC<CurrentSessionCardProps> = ({
 
             <button
               onClick={onUpdateDates}
-              className="inline-flex items-center px-4 py-2 border border-primary-300 shadow-sm text-sm leading-4 font-medium rounded-md text-primary-600 bg-white hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+              className="inline-flex items-center justify-center px-3 py-2 border border-primary-300 shadow-sm text-xs sm:text-sm leading-4 font-medium rounded-md text-primary-600 bg-white hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 w-full sm:w-auto"
             >
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />

@@ -114,11 +114,30 @@ const AddStudent: React.FC<AddStudentProps> = ({ onBack, onSuccess }) => {
               <div className="mt-2 text-sm text-primary-700">
                 <ul className="list-disc pl-5 space-y-1">
                   <li>All fields marked with * are required</li>
+                  <li>First name, middle name, and last name are all important for student identification</li>
                   <li>The student will receive login credentials via email</li>
                   <li>Profile picture is optional but recommended</li>
                   <li>Date of birth must be valid (age 5-25 years)</li>
                   <li>Class selection determines the student's academic year</li>
-                  <li>Middle name is optional</li>
+                        {/* File Type Instructions */}
+                        <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-md p-4">
+                          <div className="flex">
+                            <div className="flex-shrink-0">
+                              <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                            <div className="ml-3">
+                              <h3 className="text-sm font-medium text-yellow-800">File Upload Requirements</h3>
+                              <div className="mt-2 text-sm text-yellow-700">
+                                <ul className="list-disc pl-5 space-y-1">
+                                  <li>Profile Picture: Only .jpg, .jpeg, .png files are accepted</li>
+                                  <li>Student Files (e.g., birth certificate, previous results): Only .pdf, .docx, .png files are accepted</li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                 </ul>
               </div>
             </div>

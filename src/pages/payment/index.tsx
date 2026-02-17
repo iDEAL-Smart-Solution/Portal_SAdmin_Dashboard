@@ -91,11 +91,11 @@ export default function PaymentPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-text-primary">Payment Management</h1>
-          <p className="text-text-secondary">Monitor and manage school payments</p>
-        </div>
+      <div>
+        <h1 className="text-3xl font-bold text-text-primary">Payment Management</h1>
+        <p className="text-text-secondary">Monitor and manage school payments</p>
+      </div>
+      <div className="flex justify-end">
         <button
           onClick={exportToCSV}
           className="px-4 py-2 bg-neutral-100 hover:bg-neutral-200 text-text-primary rounded-lg transition-colors flex items-center gap-2"

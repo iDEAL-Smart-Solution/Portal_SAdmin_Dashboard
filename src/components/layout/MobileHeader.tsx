@@ -8,7 +8,11 @@ import {
   BookMarked,
 } from "lucide-react";
 
-const MobileHeader: React.FC = () => {
+interface MobileHeaderProps {
+  onSidebarToggle?: () => void;
+}
+
+const MobileHeader: React.FC<MobileHeaderProps> = ({ onSidebarToggle }) => {
   const location = useLocation();
   const activeModule = location.pathname.substring(1) || 'academic';
 
@@ -40,6 +44,18 @@ const MobileHeader: React.FC = () => {
   return (
     <div className="md:hidden bg-background-primary border-b border-neutral-200 px-4 py-3 shadow-sm">
       <div className="flex items-center space-x-3">
+        {/* Sidebar toggle button */}
+        {onSidebarToggle && (
+          <button
+            onClick={onSidebarToggle}
+            className="mr-2 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            aria-label="Open sidebar"
+          >
+            <svg className="h-6 w-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        )}
         {active?.icon}
         <h1 className="text-lg font-semibold text-text-primary">
           {active?.title}
