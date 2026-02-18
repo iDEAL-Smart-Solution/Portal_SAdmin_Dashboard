@@ -6,6 +6,11 @@ import {
   BookOpen,
   Layers,
   BookMarked,
+  FileText,
+  Calendar,
+  ClipboardCheck,
+  CreditCard,
+  Settings,
 } from "lucide-react";
 
 interface MobileHeaderProps {
@@ -36,6 +41,42 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({ onSidebarToggle }) => {
     subject: {
       title: "Subject Management",
       icon: <BookMarked className="h-5 w-5 text-primary-500" />,
+    },
+    result: {
+      title: "Result Management",
+      icon: <FileText className="h-5 w-5 text-primary-500" />,
+    },
+    'remark-templates': {
+      title: "Remark Templates",
+      icon: <ClipboardCheck className="h-5 w-5 text-primary-500" />,
+    },
+    'resource-type': {
+      title: "Resource Types",
+      icon: <FileText className="h-5 w-5 text-primary-500" />,
+    },
+    'timetable-type': {
+      title: "Timetable Types",
+      icon: <Calendar className="h-5 w-5 text-primary-500" />,
+    },
+    timetable: {
+      title: "Timetables",
+      icon: <Calendar className="h-5 w-5 text-primary-500" />,
+    },
+    payment: {
+      title: "Payments",
+      icon: <CreditCard className="h-5 w-5 text-primary-500" />,
+    },
+    'payment-type': {
+      title: "Payment Types",
+      icon: <CreditCard className="h-5 w-5 text-primary-500" />,
+    },
+    'payment-verification': {
+      title: "Verify Payments",
+      icon: <ClipboardCheck className="h-5 w-5 text-primary-500" />,
+    },
+    'system-config': {
+      title: "System Config",
+      icon: <Settings className="h-5 w-5 text-primary-500" />,
     },
   };
 

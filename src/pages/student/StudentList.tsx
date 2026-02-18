@@ -14,6 +14,7 @@ const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent,
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'name' | 'uin' | 'email'>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
     fetchStudentList();
@@ -136,92 +137,111 @@ const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent,
         </div>
       </div>
 
-      {/* Filters and Search */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          {/* Search */}
-          <div className="md:col-span-2">
-            <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-2">
-              Search Students
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+      {/* Filters and Search (Collapsible) */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+        <button
+          className="w-full flex items-center justify-between px-6 py-3 focus:outline-none hover:bg-gray-50 transition"
+          onClick={() => setFiltersOpen((v) => !v)}
+          aria-expanded={filtersOpen}
+        >
+          <span className="font-medium text-gray-800">Filters & Search</span>
+          <svg
+            className={`w-5 h-5 ml-2 transform transition-transform duration-200 ${filtersOpen ? 'rotate-180' : ''}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        {filtersOpen && (
+          <div className="p-6 pt-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              {/* Search */}
+              <div className="md:col-span-2">
+                <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-2">
+                  Search Students
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                  <input
+                    type="text"
+                    id="search"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Search by name, email, UIN, or class..."
+                  />
+                </div>
               </div>
-              <input
-                type="text"
-                id="search"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
-                placeholder="Search by name, email, UIN, or class..."
-              />
-            </div>
-          </div>
 
-          {/* Sort By */}
-          <div>
-            <label htmlFor="sort-by" className="block text-sm font-medium text-gray-700 mb-2">
-              Sort By
-            </label>
-            <select
-              id="sort-by"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as 'name' | 'uin' | 'email')}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-            >
-              <option value="name">Name</option>
-              <option value="uin">UIN</option>
-              <option value="email">Email</option>
-            </select>
-          </div>
-
-          {/* Sort Order */}
-          <div>
-            <label htmlFor="sort-order" className="block text-sm font-medium text-gray-700 mb-2">
-              Order
-            </label>
-            <select
-              id="sort-order"
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-            >
-              <option value="asc">Ascending</option>
-              <option value="desc">Descending</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Clear Filters */}
-        {(searchTerm || sortBy !== 'name' || sortOrder !== 'asc') && (
-          <div className="mt-4 flex justify-between items-center">
-            <div className="text-sm text-gray-500">
-              Sorted by <span className="font-medium capitalize">{sortBy}</span> ({sortOrder === 'asc' ? 'A-Z' : 'Z-A'})
-            </div>
-            <div className="flex space-x-4">
-              {searchTerm && (
-                <button
-                  onClick={handleClearSearch}
-                  className="text-sm text-gray-500 hover:text-gray-700 underline"
+              {/* Sort By */}
+              <div>
+                <label htmlFor="sort-by" className="block text-sm font-medium text-gray-700 mb-2">
+                  Sort By
+                </label>
+                <select
+                  id="sort-by"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as 'name' | 'uin' | 'email')}
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                 >
-                  Clear search
-                </button>
-              )}
-              {(sortBy !== 'name' || sortOrder !== 'asc') && (
-                <button
-                  onClick={() => {
-                    setSortBy('name');
-                    setSortOrder('asc');
-                  }}
-                  className="text-sm text-gray-500 hover:text-gray-700 underline"
+                  <option value="name">Name</option>
+                  <option value="uin">UIN</option>
+                  <option value="email">Email</option>
+                </select>
+              </div>
+
+              {/* Sort Order */}
+              <div>
+                <label htmlFor="sort-order" className="block text-sm font-medium text-gray-700 mb-2">
+                  Order
+                </label>
+                <select
+                  id="sort-order"
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                 >
-                  Reset sorting
-                </button>
-              )}
+                  <option value="asc">Ascending</option>
+                  <option value="desc">Descending</option>
+                </select>
+              </div>
             </div>
+
+            {/* Clear Filters */}
+            {(searchTerm || sortBy !== 'name' || sortOrder !== 'asc') && (
+              <div className="mt-4 flex justify-between items-center">
+                <div className="text-sm text-gray-500">
+                  Sorted by <span className="font-medium capitalize">{sortBy}</span> ({sortOrder === 'asc' ? 'A-Z' : 'Z-A'})
+                </div>
+                <div className="flex space-x-4">
+                  {searchTerm && (
+                    <button
+                      onClick={handleClearSearch}
+                      className="text-sm text-gray-500 hover:text-gray-700 underline"
+                    >
+                      Clear search
+                    </button>
+                  )}
+                  {(sortBy !== 'name' || sortOrder !== 'asc') && (
+                    <button
+                      onClick={() => {
+                        setSortBy('name');
+                        setSortOrder('asc');
+                      }}
+                      className="text-sm text-gray-500 hover:text-gray-700 underline"
+                    >
+                      Reset sorting
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

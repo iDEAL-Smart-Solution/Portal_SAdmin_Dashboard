@@ -1,153 +1,149 @@
-import React, { useEffect, useState } from 'react';
-import { useResultStore } from '../../stores/result-store';
+  import React, { useEffect, useState } from 'react';
+  import { useResultStore } from '../../stores/result-store';
 
-interface ResultListProps {
-  onUploadResult: () => void;
-  onBulkUpload: () => void;
-}
+  interface ResultListProps {
+    onUploadResult: () => void;
+    onBulkUpload: () => void;
+  }
 
-const ResultList: React.FC<ResultListProps> = ({ onUploadResult, onBulkUpload }) => {
+
+const ResultList: React.FC<ResultListProps> = ({ onUploadResult }) => {
   const { results, fetchAllResults, deleteResult, isLoading, error } = useResultStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterTerm, setFilterTerm] = useState<string>('');
   const [filterSession, setFilterSession] = useState<string>('');
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
     fetchAllResults();
   }, [fetchAllResults]);
 
-  const handleDelete = async (id: string) => {
-    try {
-      await deleteResult(id);
-      setDeleteConfirm(null);
-    } catch (err) {
-      console.error('Failed to delete result:', err);
-    }
-  };
+  // Unique sessions for filter dropdown
+  const uniqueSessions = Array.from(new Set((results || []).map(r => r.session))).filter(Boolean);
 
-  const getTermName = (term: number) => {
-    switch (term) {
-      case 1: return 'First Term';
-      case 2: return 'Second Term';
-      case 3: return 'Third Term';
-      default: return `Term ${term}`;
-    }
-  };
+  // Filtered results based on search and filters
+  const filteredResults = (results || []).filter(result => {
+    const matchesSearch =
+      searchTerm === '' ||
+      result.studentUin?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      result.subjectCode?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesTerm = filterTerm === '' || String(result.term) === filterTerm;
+    const matchesSession = filterSession === '' || result.session === filterSession;
+    return matchesSearch && matchesTerm && matchesSession;
+  });
 
-  const getGrade = (score: number) => {
-    if (score >= 70) return 'A';
-    if (score >= 60) return 'B';
-    if (score >= 50) return 'C';
-    if (score >= 45) return 'D';
-    if (score >= 40) return 'E';
+  // Helpers for grade, color, term name
+  function getGrade(total: number): string {
+    if (total >= 70) return 'A';
+    if (total >= 60) return 'B';
+    if (total >= 50) return 'C';
+    if (total >= 45) return 'D';
+    if (total >= 40) return 'E';
     return 'F';
-  };
-
-  const getGradeColor = (grade: string) => {
+  }
+  function getGradeColor(grade: string): string {
     switch (grade) {
       case 'A': return 'bg-green-100 text-green-800';
       case 'B': return 'bg-blue-100 text-blue-800';
       case 'C': return 'bg-yellow-100 text-yellow-800';
       case 'D': return 'bg-orange-100 text-orange-800';
-      case 'E': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'E': return 'bg-pink-100 text-pink-800';
+      default: return 'bg-red-100 text-red-800';
     }
-  };
-
-  // Get unique sessions from results
-  const uniqueSessions = [...new Set(results.map(r => r.session))];
-
-  // Filter results
-  const filteredResults = results.filter(result => {
-    const matchesSearch = 
-      result.studentUin.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      result.subjectCode.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesTerm = !filterTerm || result.term === parseInt(filterTerm);
-    const matchesSession = !filterSession || result.session === filterSession;
-    return matchesSearch && matchesTerm && matchesSession;
-  });
+  }
+  function getTermName(term: string | number): string {
+    switch (String(term)) {
+      case '1': return 'First Term';
+      case '2': return 'Second Term';
+      case '3': return 'Third Term';
+      default: return String(term);
+    }
+  }
+  async function handleDelete(id: string) {
+    try {
+      await deleteResult(id);
+      setDeleteConfirm(null);
+    } catch (err) {
+      // swallow or handle error as needed
+      setDeleteConfirm(null);
+    }
+  }
 
   return (
-    <div className="p-6">
-      {/* Header */}
-      <div className="mb-2">
-        <h1 className="text-2xl font-bold text-gray-900">Result Management</h1>
-        <p className="text-sm text-gray-500 mt-1">View, upload and manage student results</p>
-      </div>
-      <div className="flex gap-2 mb-6">
+    <div>
+      {/* Filters (collapsible) */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
         <button
-          onClick={onBulkUpload}
-          className="inline-flex items-center px-2 py-1 sm:px-4 sm:py-2 border border-primary-500 rounded-lg text-xs sm:text-sm font-medium text-primary-600 bg-white hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+          className="w-full flex items-center justify-between px-4 py-3 focus:outline-none hover:bg-gray-50 transition"
+          onClick={() => setFiltersOpen(v => !v)}
+          aria-expanded={filtersOpen}
         >
-          <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+          <span className="font-medium text-gray-800">Filters</span>
+          <svg
+            className={`w-5 h-5 ml-2 transform transition-transform duration-200 ${filtersOpen ? 'rotate-180' : ''}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
-          Bulk Upload
         </button>
-        <button
-          onClick={onUploadResult}
-          className="inline-flex items-center px-2 py-1 sm:px-4 sm:py-2 border border-transparent rounded-lg shadow-sm text-xs sm:text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-        >
-          <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
-          Upload Result
-        </button>
-      </div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
-            <input
-              type="text"
-              placeholder="Search by Student ID or Subject..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-            />
+        {filtersOpen && (
+          <div className="p-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                <input
+                  type="text"
+                  placeholder="Search by Student ID or Subject..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Term</label>
+                <select
+                  value={filterTerm}
+                  onChange={(e) => setFilterTerm(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                >
+                  <option value="">All Terms</option>
+                  <option value="1">First Term</option>
+                  <option value="2">Second Term</option>
+                  <option value="3">Third Term</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Session</label>
+                <select
+                  value={filterSession}
+                  onChange={(e) => setFilterSession(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                >
+                  <option value="">All Sessions</option>
+                  {uniqueSessions.map(session => (
+                    <option key={session} value={session}>{session}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex items-end">
+                <button
+                  onClick={() => {
+                    setSearchTerm('');
+                    setFilterTerm('');
+                    setFilterSession('');
+                  }}
+                  className="w-full px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200"
+                >
+                  Clear Filters
+                </button>
+              </div>
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Term</label>
-            <select
-              value={filterTerm}
-              onChange={(e) => setFilterTerm(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-            >
-              <option value="">All Terms</option>
-              <option value="1">First Term</option>
-              <option value="2">Second Term</option>
-              <option value="3">Third Term</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Session</label>
-            <select
-              value={filterSession}
-              onChange={(e) => setFilterSession(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-            >
-              <option value="">All Sessions</option>
-              {uniqueSessions.map(session => (
-                <option key={session} value={session}>{session}</option>
-              ))}
-            </select>
-          </div>
-          <div className="flex items-end">
-            <button
-              onClick={() => {
-                setSearchTerm('');
-                setFilterTerm('');
-                setFilterSession('');
-              }}
-              className="w-full px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200"
-            >
-              Clear Filters
-            </button>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Error Message */}
