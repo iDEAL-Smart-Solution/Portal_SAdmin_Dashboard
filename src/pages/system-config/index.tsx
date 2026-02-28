@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSystemConfigStore } from '../../stores/system-config-store';
+import AdminPrincipalSignature from '../../components/signature/AdminPrincipalSignature';
 
 export default function SystemConfigManagement() {
   const { configurations, isLoading, error, fetchConfigurations, deleteConfiguration } = useSystemConfigStore();
@@ -46,6 +47,8 @@ export default function SystemConfigManagement() {
         <h1 className="text-3xl font-bold text-text-primary">System Configurations</h1>
         <p className="text-text-secondary">Manage school system settings and integrations</p>
       </div>
+
+      <AdminPrincipalSignature />
       <div className="flex justify-end">
         <button
           onClick={() => setIsCreateModalOpen(true)}

@@ -6,7 +6,8 @@ interface Props {
   isPrincipal?: boolean;
   onUploaded?: (url: string) => void;
 }
-export default function SignatureUploader({ studentId, isPrincipal = false, onUploaded }: Props) {
+
+export default function SignatureUploaderClean({ studentId, isPrincipal = false, onUploaded }: Props) {
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -53,4 +54,3 @@ export default function SignatureUploader({ studentId, isPrincipal = false, onUp
     </div>
   );
 }
-

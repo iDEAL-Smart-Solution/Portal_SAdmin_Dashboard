@@ -1,5 +1,4 @@
-import React from 'react';
-import SignatureUploader from './SignatureUploader';
+import SignatureUploader from './SignatureUploaderClean';
 
 export default function AdminPrincipalSignature() {
   return (
