@@ -20,6 +20,23 @@ const TimetableList: React.FC<TimetableListProps> = ({ onAdd, onEdit }) => {
     return days[day];
   };
 
+  const PREVIEW_DAYS = [1, 2, 3, 4, 5]; // Monday-Friday
+
+  const getDaySchedule = (day: number, days: Array<{ day: number; slots: Array<{ startTime?: string; endTime?: string }> }>) => {
+    return days.find((d) => d.day === day);
+  };
+
+  const getTimeRange = (slots: Array<{ startTime?: string; endTime?: string }>) => {
+    if (!slots || slots.length === 0) return 'No periods';
+
+    const sorted = [...slots].sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''));
+    const first = sorted[0]?.startTime?.slice(0, 5);
+    const last = sorted[sorted.length - 1]?.endTime?.slice(0, 5);
+
+    if (!first || !last) return `${slots.length} ${slots.length === 1 ? 'period' : 'periods'}`;
+    return `${first} - ${last}`;
+  };
+
   const handleDelete = async (classId: string) => {
     try {
       await deleteTimetableByClass(classId);
@@ -124,21 +141,47 @@ const TimetableList: React.FC<TimetableListProps> = ({ onAdd, onEdit }) => {
                   </div>
                 </div>
                 <div className="mt-4">
-                  <div className="text-sm text-gray-500">
-                    <p className="font-medium text-gray-700 mb-2">Schedule Overview:</p>
+                  <div className="rounded-xl border border-indigo-100 bg-gradient-to-br from-indigo-50 via-white to-cyan-50 p-3">
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-xs font-semibold tracking-wide uppercase text-indigo-700">Weekly Preview</p>
+                      <span className="text-xs text-gray-600">
+                        {timetable.days.reduce((total, day) => total + day.slots.length, 0)} total periods
+                      </span>
+                    </div>
+
                     {timetable.days.length === 0 ? (
-                      <p className="text-gray-400 italic">No schedule configured</p>
+                      <p className="text-sm text-gray-400 italic">No schedule configured</p>
                     ) : (
-                      <ul className="space-y-1">
-                        {timetable.days.map((daily) => (
-                          <li key={daily.day} className="flex justify-between">
-                            <span className="font-medium">{daily.dayName || getDayName(daily.day)}</span>
-                            <span className="text-gray-600">
-                              {daily.slots.length} {daily.slots.length === 1 ? 'period' : 'periods'}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {PREVIEW_DAYS.map((day) => {
+                          const daySchedule = getDaySchedule(day, timetable.days);
+                          const slotCount = daySchedule?.slots.length || 0;
+                          const hasSlots = slotCount > 0;
+
+                          return (
+                            <div
+                              key={day}
+                              className={`rounded-lg border px-3 py-2 transition-colors ${
+                                hasSlots
+                                  ? 'border-indigo-200 bg-white'
+                                  : 'border-gray-200 bg-gray-50'
+                              }`}
+                            >
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-xs font-semibold text-gray-800">
+                                  {getDayName(day)}
+                                </span>
+                                <span className={`text-xs font-medium ${hasSlots ? 'text-indigo-700' : 'text-gray-500'}`}>
+                                  {slotCount} {slotCount === 1 ? 'period' : 'periods'}
+                                </span>
+                              </div>
+                              <p className={`text-xs ${hasSlots ? 'text-gray-700' : 'text-gray-400'}`}>
+                                {getTimeRange(daySchedule?.slots || [])}
+                              </p>
+                            </div>
+                          );
+                        })}
+                      </div>
                     )}
                   </div>
                 </div>

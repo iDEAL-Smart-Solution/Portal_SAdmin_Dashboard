@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { Eye, Edit3 } from 'lucide-react';
 import { useStudentStore } from '../../stores/student-store';
-import StudentCard from '../../components/student/StudentCard';
+import { FileBaseUrl } from '../../lib/axios';
 
 interface StudentListProps {
   onViewProfile: (id: string) => void;
@@ -36,6 +37,33 @@ const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent,
 
   const handleClearSearch = () => {
     setSearchTerm('');
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  const calculateAge = (dateOfBirth: string): number => {
+    const birthDate = new Date(dateOfBirth);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
+  const getClassBadgeColor = (className: string) => {
+    if (className.includes('Grade 9')) return 'bg-success-100 text-success-800';
+    if (className.includes('Grade 10')) return 'bg-primary-100 text-primary-800';
+    if (className.includes('Grade 11')) return 'bg-warning-100 text-warning-800';
+    if (className.includes('Grade 12')) return 'bg-accent-100 text-accent-800';
+    return 'bg-neutral-100 text-neutral-800';
   };
 
 
@@ -325,7 +353,7 @@ const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent,
         </div>
       </div>
 
-      {/* Student List */}
+      {/* Student Table */}
       {isLoading ? (
         <div className="flex justify-center items-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
@@ -356,15 +384,78 @@ const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent,
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {sortedStudentList.map((student) => (
-            <StudentCard
-              key={student.id}
-              student={student}
-              onViewProfile={onViewProfile}
-              onEdit={onEditStudent}
-            />
-          ))}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">UIN</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gender</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Age</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Enrolled</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {sortedStudentList.map((student) => (
+                  <tr key={student.id} className="hover:bg-gray-50 transition-colors duration-150">
+                    <td className="px-4 py-4">
+                      <div className="flex items-center space-x-3 min-w-[220px]">
+                        {student.profilePicture ? (
+                          <img
+                            src={`${FileBaseUrl}/${student.profilePicture.startsWith('/') ? student.profilePicture.slice(1) : student.profilePicture}`}
+                            alt={student.fullName}
+                            className="w-10 h-10 rounded-full object-cover border border-neutral-200"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 bg-neutral-200 rounded-full flex items-center justify-center">
+                            <svg className="w-5 h-5 text-neutral-400" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                        )}
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{student.fullName}</p>
+                          <p className="text-xs text-gray-500">{student.email}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">{student.uin}</td>
+                    <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getClassBadgeColor(student.className)}`}>
+                        {student.className}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 text-sm text-gray-700 capitalize whitespace-nowrap">{student.gender}</td>
+                    <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">{calculateAge(student.dateOfBirth)} years</td>
+                    <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">{formatDate(student.createdAt)}</td>
+                    <td className="px-4 py-4 whitespace-nowrap text-right">
+                      <div className="inline-flex items-center gap-2">
+                        <button
+                          onClick={() => onViewProfile(student.id)}
+                          className="inline-flex items-center p-1 text-blue-600 hover:text-blue-700"
+                          title="View Profile"
+                          aria-label="View Profile"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => onEditStudent(student.id)}
+                          className="inline-flex items-center p-1 text-gray-600 hover:text-gray-700"
+                          title="Edit Student"
+                          aria-label="Edit Student"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

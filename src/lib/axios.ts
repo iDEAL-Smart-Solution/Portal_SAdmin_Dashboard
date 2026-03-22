@@ -3,8 +3,7 @@ import axios from 'axios';
 // const BASE_URL = 'http://localhost:5093/api/';
 export const BASE_URL = "https://portal-api.idealsmartsolutions.com/api";
 
-// export const FileBaseUrl = 'http://localhost:5093';
-export const FileBaseUrl = 'https://portal-api.idealsmartsolutions.com';
+export const FileBaseUrl = 'https://pub-3c097fbfc9714a69b02f7640ab008bd3.r2.dev';
 // 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,

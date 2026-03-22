@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useClassStore } from '../../stores/class-store';
-import ClassCard from './ClassCard';
+import { Eye, Edit3 } from 'lucide-react';
 
 interface ClassListProps {
   onViewProfile: (id: string) => void;
@@ -125,17 +125,50 @@ const ClassList: React.FC<ClassListProps> = ({ onViewProfile, onEdit, onAddClass
           </div>
         </div>
 
-        {/* Classes Grid */}
+        {/* Classes Table */}
         {filteredClasses.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredClasses.map((classData) => (
-              <ClassCard
-                key={classData.id}
-                classData={classData}
-                onViewProfile={onViewProfile}
-                onEdit={onEdit}
-              />
-            ))}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class Name</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Students</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subjects</th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredClasses.map((classData) => (
+                    <tr key={classData.id} className="hover:bg-gray-50 transition-colors duration-150">
+                      <td className="px-4 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">{classData.name}</td>
+                      <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">{classData.studentCount}</td>
+                      <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">{classData.subjectCount}</td>
+                      <td className="px-4 py-4 whitespace-nowrap text-right">
+                        <div className="inline-flex items-center gap-2">
+                          <button
+                            onClick={() => onViewProfile(classData.id)}
+                            className="inline-flex items-center p-1 text-blue-600 hover:text-blue-700"
+                            title="View Class"
+                            aria-label="View Class"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => onEdit(classData.id)}
+                            className="inline-flex items-center p-1 text-gray-600 hover:text-gray-700"
+                            title="Edit Class"
+                            aria-label="Edit Class"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         ) : (
           <div className="text-center py-12">

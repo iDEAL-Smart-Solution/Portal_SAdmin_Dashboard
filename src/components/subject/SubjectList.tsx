@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Eye, Edit3 } from 'lucide-react';
 import { useSubjectStore } from '../../stores/subject-store';
 
 interface SubjectListProps {
@@ -165,52 +166,58 @@ const SubjectList: React.FC<SubjectListProps> = ({
           )}
         </div>
 
-        {/* Subjects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredSubjects.map((subject) => (
-            <div key={subject.id} className="bg-white rounded-lg shadow hover:shadow-md transition-shadow">
-              <div className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900">{subject.name}</h3>
-                    <p className="text-sm text-gray-600 mt-1">Code: {subject.code}</p>
-                    <p className="text-sm text-gray-500 mt-2 line-clamp-2">{subject.description}</p>
-                  </div>
-                </div>
-                
-                <div className="mt-4 space-y-2">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
-                    <span>Class: {subject.className}</span>
-                  </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    <span>Staff Name: {subject.staffName || 'Not assigned'}</span>
-                  </div>
-                </div>
-
-                <div className="mt-4 flex space-x-2">
-                  <button
-                    onClick={() => onViewProfile(subject.id)}
-                    className="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                  >
-                    View Details
-                  </button>
-                  <button
-                    onClick={() => onEditSubject(subject.id)}
-                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                  >
-                    Edit
-                  </button>
-                </div>
-              </div>
+        {/* Subjects Table */}
+        {filteredSubjects.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Staff</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredSubjects.map((subject) => (
+                    <tr key={subject.id} className="hover:bg-gray-50 transition-colors duration-150">
+                      <td className="px-4 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">{subject.name}</td>
+                      <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">{subject.code}</td>
+                      <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">{subject.className}</td>
+                      <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">{subject.staffName || 'Not assigned'}</td>
+                      <td className="px-4 py-4 text-sm text-gray-600 max-w-xs truncate" title={subject.description || '-'}>
+                        {subject.description || '-'}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-right">
+                        <div className="inline-flex items-center gap-2">
+                          <button
+                            onClick={() => onViewProfile(subject.id)}
+                            className="inline-flex items-center p-1 text-blue-600 hover:text-blue-700"
+                            title="View Subject"
+                            aria-label="View Subject"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => onEditSubject(subject.id)}
+                            className="inline-flex items-center p-1 text-gray-600 hover:text-gray-700"
+                            title="Edit Subject"
+                            aria-label="Edit Subject"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          ))}
-        </div>
+          </div>
+        )}
 
         {filteredSubjects.length === 0 && (
           <div className="text-center py-12">

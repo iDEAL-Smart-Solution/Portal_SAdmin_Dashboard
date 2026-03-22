@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useAcademicStore } from '../../stores/academic-store';
-import CurrentSessionCard from '../../components/academic/CurrentSessionCard';
 import TermSelector from '../../components/academic/TermSelector';
 import { Term } from '../../types/academic';
 
@@ -55,6 +54,27 @@ const AcademicDataList: React.FC<AcademicDataListProps> = ({
       } catch (err) {
         console.error('Failed to move to next term:', err);
       }
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  const getTermBadgeColor = (term: Term) => {
+    switch (term) {
+      case Term.first:
+        return 'bg-success-100 text-success-800 border-success-200';
+      case Term.second:
+        return 'bg-primary-100 text-primary-800 border-primary-200';
+      case Term.third:
+        return 'bg-accent-100 text-accent-800 border-accent-200';
+      default:
+        return 'bg-neutral-100 text-neutral-800 border-neutral-200';
     }
   };
 
@@ -140,13 +160,64 @@ const AcademicDataList: React.FC<AcademicDataListProps> = ({
       ) : (
         /* Current Session Display */
         <div className="space-y-6">
-          {/* Current Session Card */}
-          <CurrentSessionCard
-            session={currentSession}
-            onUpdateSession={onEditSession}
-            onUpdateBranding={onUpdateBranding}
-            onUpdateDates={onUpdateDates}
-          />
+          {/* Current Session Table */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Session</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">School</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Term</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Term Ends</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Next Term Begins</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Updated</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  <tr className="hover:bg-gray-50 transition-colors duration-150">
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">{currentSession.Current_Session}</td>
+                    <td className="px-6 py-4 text-sm text-gray-700">{currentSession.SchoolName || 'School Name Not Set'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getTermBadgeColor(currentSession.Current_Term)}`}>
+                        {currentSession.Current_Term} Term
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-700 whitespace-nowrap">
+                      {currentSession.CurrentTermEndsOn ? formatDate(currentSession.CurrentTermEndsOn) : 'Not set'}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-700 whitespace-nowrap">
+                      {currentSession.NextTermBeginsOn ? formatDate(currentSession.NextTermBeginsOn) : 'Not set'}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-700 whitespace-nowrap">{formatDate(currentSession.UpdatedAt)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                      <div className="inline-flex items-center gap-2">
+                        <button
+                          onClick={onEditSession}
+                          className="inline-flex items-center px-3 py-1.5 border border-neutral-300 text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-neutral-50"
+                        >
+                          Update Session
+                        </button>
+                        <button
+                          onClick={onUpdateBranding}
+                          className="inline-flex items-center px-3 py-1.5 border border-neutral-300 text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-neutral-50"
+                        >
+                          Update Branding
+                        </button>
+                        <button
+                          onClick={onUpdateDates}
+                          className="inline-flex items-center px-3 py-1.5 border border-primary-300 text-xs font-medium rounded-md text-primary-600 bg-white hover:bg-primary-50"
+                        >
+                          Update Dates
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
 
           {/* Term Selector */}
           <TermSelector

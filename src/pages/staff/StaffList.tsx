@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { Eye, Edit3 } from 'lucide-react';
 import { useStaffStore } from '../../stores/staff-store';
-import StaffCard from '../../components/staff/StaffCard';
+import { FileBaseUrl } from '../../lib/axios';
 
 interface StaffListProps {
   onViewProfile: (id: string) => void;
@@ -328,7 +329,7 @@ const StaffList: React.FC<StaffListProps> = ({ onViewProfile, onEditStaff, onAdd
         </div>
       </div>
 
-      {/* Staff List */}
+      {/* Staff Table */}
       {isLoading ? (
         <div className="flex justify-center items-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -359,15 +360,68 @@ const StaffList: React.FC<StaffListProps> = ({ onViewProfile, onEditStaff, onAdd
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {sortedStaffList.map((staff) => (
-            <StaffCard
-              key={staff.id}
-              staff={staff}
-              onViewProfile={onViewProfile}
-              onEdit={onEditStaff}
-            />
-          ))}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Staff</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">UIN</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gender</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {sortedStaffList.map((staff) => (
+                  <tr key={staff.id} className="hover:bg-gray-50 transition-colors duration-150">
+                    <td className="px-4 py-4">
+                      <div className="flex items-center space-x-3 min-w-[220px]">
+                        {staff.profilePicture ? (
+                          <img
+                            src={`${FileBaseUrl}/${staff.profilePicture.startsWith('/') ? staff.profilePicture.slice(1) : staff.profilePicture}`}
+                            alt={staff.fullName}
+                            className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                            <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                        )}
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{staff.fullName}</p>
+                          <p className="text-xs text-gray-500">{staff.email}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">{staff.UIN || staff.uin || 'N/A'}</td>
+                    <td className="px-4 py-4 text-sm text-gray-700 capitalize whitespace-nowrap">{staff.gender}</td>
+                    <td className="px-4 py-4 whitespace-nowrap text-right">
+                      <div className="inline-flex items-center gap-2">
+                        <button
+                          onClick={() => onViewProfile(staff.id)}
+                          className="inline-flex items-center p-1 text-blue-600 hover:text-blue-700"
+                          title="View Profile"
+                          aria-label="View Profile"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => onEditStaff(staff.id)}
+                          className="inline-flex items-center p-1 text-gray-600 hover:text-gray-700"
+                          title="Edit Staff"
+                          aria-label="Edit Staff"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>
