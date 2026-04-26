@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../stores/auth-store';
+import { useAcademicStore } from '../../stores/academic-store';
+import { FileBaseUrl } from '../../lib/axios';
 import logo from '../../assets/logo.jpg';
 
 interface SidebarProps {
@@ -10,8 +12,36 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ onModuleChange }) => {
   const { logout } = useAuthStore();
+  const { currentBranding, fetchCurrentSession } = useAcademicStore();
   const navigate = useNavigate();
   const location = useLocation();
+  const [logoSrc, setLogoSrc] = useState(logo);
+
+  useEffect(() => {
+    fetchCurrentSession();
+  }, [fetchCurrentSession]);
+
+  useEffect(() => {
+    const schoolLogoPath = currentBranding?.SchoolLogoFilePath;
+
+    if (typeof schoolLogoPath !== 'string' || !schoolLogoPath.trim()) {
+      setLogoSrc(logo);
+      return;
+    }
+
+    if (schoolLogoPath.startsWith('/src/') || schoolLogoPath.startsWith('/assets/')) {
+      setLogoSrc(logo);
+      return;
+    }
+
+    if (schoolLogoPath.startsWith('http://') || schoolLogoPath.startsWith('https://')) {
+      setLogoSrc(schoolLogoPath);
+      return;
+    }
+
+    const normalizedPath = schoolLogoPath.startsWith('/') ? schoolLogoPath.slice(1) : schoolLogoPath;
+    setLogoSrc(`${FileBaseUrl}/${normalizedPath}`);
+  }, [currentBranding?.SchoolLogoFilePath]);
 
   // Get current module from URL
   const currentModule = location.pathname.substring(1) || 'academic';
@@ -192,9 +222,14 @@ const Sidebar: React.FC<SidebarProps> = ({ onModuleChange }) => {
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 rounded-full overflow-hidden bg-neutral-100">
             <img
-              src={logo}
+              src={logoSrc}
               alt="iDEAL Smart Solution Limited Logo"
               className="w-full h-full object-cover"
+              onError={(event) => {
+                if (event.currentTarget.src !== logo) {
+                  event.currentTarget.src = logo;
+                }
+              }}
             />
           </div>
           <div className="text-center">

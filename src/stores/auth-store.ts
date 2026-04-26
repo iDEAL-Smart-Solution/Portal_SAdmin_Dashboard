@@ -2,6 +2,10 @@ import { create } from 'zustand';
 import { LoginResponse, AuthState, LoginApiResponse } from '../types/auth';
 import axiosInstance from '../lib/axios';
 
+const isSchoolAdminRole = (role?: string) => role?.trim().toLowerCase() === 'admin';
+
+const ACCESS_DENIED_MESSAGE = 'Access denied. Only School Admin accounts can access this dashboard. Please login with an appropriate School Admin account.';
+
 interface AuthStore extends AuthState {
   // Actions
   login: (credentials: { UIN: string; password: string }) => Promise<LoginResponse>;
@@ -20,7 +24,7 @@ const initializeAuth = () => {
       const user = JSON.parse(userStr);
       
       // Check if user role is Admin
-      if (user.role !== 'Admin') {
+      if (!isSchoolAdminRole(user.role)) {
         // Clear invalid data for non-Admin users
         sessionStorage.removeItem('token');
         sessionStorage.removeItem('user');
@@ -30,7 +34,7 @@ const initializeAuth = () => {
           isAuthenticated: false,
           user: null,
           isLoading: false,
-          error: 'Access denied. Only School Admin accounts can access this dashboard. Please login with an appropriate School Admin account.'
+          error: ACCESS_DENIED_MESSAGE
         };
       }
       
@@ -77,15 +81,19 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         const { user, token } = data;
 
         // Check if user role is Admin
-        if (user.role !== 'Admin') {
+        if (!isSchoolAdminRole(user.role)) {
+          sessionStorage.removeItem('token');
+          sessionStorage.removeItem('user');
+          sessionStorage.removeItem('SchoolId');
+
           set({ 
-            error: 'Access denied. Only School Admin accounts can access this dashboard. Please login with an appropriate School Admin account.',
+            error: ACCESS_DENIED_MESSAGE,
             isLoading: false 
           });
           
           return {
             success: false,
-            message: 'Access denied. Only School Admin accounts can access this dashboard. Please login with an appropriate School Admin account.'
+            message: ACCESS_DENIED_MESSAGE
           };
         }
 
@@ -176,6 +184,6 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   isAdmin: (): boolean => {
     const { user } = get();
-    return user?.role === 'Admin';
+    return isSchoolAdminRole(user?.role);
   }
 }));

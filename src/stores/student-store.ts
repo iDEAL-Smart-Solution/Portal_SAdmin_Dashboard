@@ -213,18 +213,42 @@ export const useStudentStore = create<StudentState>((set, get) => ({
     }
   },
 
-  updateStudent: async (_id: string, _studentData: UpdateStudentRequest) => {
+  updateStudent: async (id: string, studentData: UpdateStudentRequest) => {
     set({ isLoading: true, error: null });
     try {
-      // Note: Update endpoint not available in backend yet
-      // This is a placeholder implementation
-      throw new Error('Update student functionality not available yet');
+      const formData = new FormData();
+      formData.append('studentId', id);
+      formData.append('firstName', studentData.firstName);
+      formData.append('lastName', studentData.lastName);
+      if (studentData.middleName) {
+        formData.append('middleName', studentData.middleName);
+      }
+      formData.append('dateOfBirth', new Date(studentData.dateOfBirth).toISOString());
+      formData.append('email', studentData.email);
+      formData.append('phoneNumber', studentData.phoneNumber);
+      formData.append('classId', studentData.classId);
+      formData.append('address', studentData.address);
+      formData.append('gender', studentData.gender);
+      if (studentData.profilePicture instanceof File) {
+        formData.append('profilePicture', studentData.profilePicture);
+      }
+
+      await axiosInstance.put('/Student/update-student', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      // Refresh the student list after successful update
+      await get().fetchStudentList();
+      set({ isLoading: false, error: null });
     } catch (error: any) {
       const errorMessage = error.response?.data?.details || 
                           error.response?.data?.message || 
                           error.message || 
                           'Failed to update student';
       set({ error: errorMessage, isLoading: false });
+      throw error;
     }
   },
 

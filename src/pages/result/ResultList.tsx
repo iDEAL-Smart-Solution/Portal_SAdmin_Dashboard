@@ -7,7 +7,7 @@
   }
 
 
-const ResultList: React.FC<ResultListProps> = ({ onUploadResult }) => {
+  const ResultList: React.FC<ResultListProps> = ({ onUploadResult, onBulkUpload }) => {
   const { results, fetchAllResults, deleteResult, isLoading, error } = useResultStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterTerm, setFilterTerm] = useState<string>('');
@@ -72,6 +72,34 @@ const ResultList: React.FC<ResultListProps> = ({ onUploadResult }) => {
 
   return (
     <div>
+      {/* Header Actions */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Results</h1>
+          <p className="text-sm text-gray-500">Manage uploaded student results</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onUploadResult}
+            className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700"
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Upload Result
+          </button>
+          <button
+            onClick={onBulkUpload}
+            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            Bulk Upload
+          </button>
+        </div>
+      </div>
+
       {/* Filters (collapsible) */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
         <button

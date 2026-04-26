@@ -1,7 +1,9 @@
 import axios from 'axios';
 
-// const BASE_URL = 'http://localhost:5093/api/';
-export const BASE_URL = "https://portal-api.idealsmartsolutions.com/api";
+const BASE_URL = 'http://localhost:5093/api/';
+// export const BASE_URL = "https://portal-api.idealsmartsolutions.com/api";
+
+const isSchoolAdminRole = (role?: string) => role?.trim().toLowerCase() === 'admin';
 
 export const FileBaseUrl = 'https://pub-3c097fbfc9714a69b02f7640ab008bd3.r2.dev';
 // 
@@ -19,7 +21,7 @@ axiosInstance.interceptors.request.use(
     if (token && userStr) {
       try {
         const user = JSON.parse(userStr);
-        if (user.role !== 'Admin') {
+        if (!isSchoolAdminRole(user.role)) {
           // Clear invalid session data
           sessionStorage.removeItem('token');
           sessionStorage.removeItem('user');

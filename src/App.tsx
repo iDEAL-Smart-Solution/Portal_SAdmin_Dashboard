@@ -19,25 +19,23 @@ import SystemConfigManagement from './pages/system-config'
 import ResultManagement from './pages/result'
 import RemarkTemplateManagement from './pages/remark-templates/RemarkTemplateManagement'
 
+const isSchoolAdminRole = (role?: string) => role?.trim().toLowerCase() === 'admin'
+
 function AppContent() {
   const { isAuthenticated, user, isAdmin, error } = useAuthStore()
   const navigate = useNavigate()
 
-  // Check if user is Admin on component mount and when user changes
   useEffect(() => {
     if (isAuthenticated && user && !isAdmin()) {
-      // Force logout if user is not Admin
       useAuthStore.getState().logout();
     }
   }, [isAuthenticated, user, isAdmin]);
 
-  // Show login page if not authenticated or if there's an access error
   if (!isAuthenticated || (error && error.includes('Access denied'))) {
     return <LoginPage onLoginSuccess={() => navigate('/academic')} />
   }
 
-  // Additional safety check - if somehow user is authenticated but not Admin
-  if (isAuthenticated && user && user.role !== 'Admin') {
+  if (isAuthenticated && user && !isSchoolAdminRole(user.role)) {
     useAuthStore.getState().logout();
     return <LoginPage onLoginSuccess={() => navigate('/academic')} />
   }

@@ -19,7 +19,7 @@ export interface ResultResponse {
 export interface CreateResultRequest {
   studentId: string;
   studentUin: string;
-  subjectCode: string;
+  subjectId: string;
   first_CA_Score: number;
   second_CA_Score: number;
   third_CA_Score: number;
@@ -74,6 +74,7 @@ interface ResultStore extends ResultState {
   fetchStudentsByClass: (className: string) => Promise<void>;
   fetchStudentList: (searchParam?: string) => Promise<void>;
   fetchSubjects: () => Promise<void>;
+  fetchSubjectsByClass: (classId: string) => Promise<void>;
   fetchAcademicSessions: () => Promise<void>;
   fetchCurrentSession: () => Promise<void>;
   
@@ -85,7 +86,11 @@ interface ResultStore extends ResultState {
   // Utility
   clearError: () => void;
   clearStudents: () => void;
+  clearSubjects: () => void;
 }
+
+const subjectCacheByClassId = new Map<string, SubjectOption[]>();
+let subjectOptionsCache: SubjectOption[] | null = null;
 
 export const useResultStore = create<ResultStore>((set, get) => ({
   results: [],
@@ -180,17 +185,48 @@ export const useResultStore = create<ResultStore>((set, get) => ({
   fetchSubjects: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axiosInstance.get('/Subject/get-all-subjects');
+      if (subjectOptionsCache) {
+        set({ subjects: subjectOptionsCache, isLoading: false });
+        return;
+      }
+
+      const response = await axiosInstance.get('/Subject/options');
       const data = response.data.data || response.data || [];
       const subjects: SubjectOption[] = (Array.isArray(data) ? data : []).map((item: any) => ({
         id: item.id,
         name: item.name,
         code: item.code,
       }));
+      subjectOptionsCache = subjects;
       set({ subjects, isLoading: false });
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || 'Failed to fetch subjects';
       set({ error: errorMessage, isLoading: false });
+    }
+  },
+
+  fetchSubjectsByClass: async (classId: string) => {
+    set({ isLoading: true, error: null });
+    try {
+      const cachedSubjects = subjectCacheByClassId.get(classId);
+      if (cachedSubjects) {
+        set({ subjects: cachedSubjects, isLoading: false });
+        return;
+      }
+
+      const response = await axiosInstance.get(`/Subject/by-class/${classId}`);
+      const data = response.data.data || response.data || [];
+      const subjects: SubjectOption[] = (Array.isArray(data) ? data : []).map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        code: item.code,
+      }));
+
+      subjectCacheByClassId.set(classId, subjects);
+      set({ subjects, isLoading: false });
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Failed to fetch subjects for class';
+      set({ error: errorMessage, isLoading: false, subjects: [] });
     }
   },
 
@@ -201,9 +237,9 @@ export const useResultStore = create<ResultStore>((set, get) => ({
       const data = response.data.data || response.data || [];
       const sessions: AcademicSession[] = (Array.isArray(data) ? data : []).map((item: any) => ({
         id: item.id,
-        name: item.name,
-        isCurrent: item.isCurrent,
-        currentTerm: item.currentTerm,
+        name: item.current_Session || item.name || '',
+        isCurrent: item.isCurrent ?? false,
+        currentTerm: item.current_Term ?? item.currentTerm,
       }));
       set({ academicSessions: sessions, isLoading: false });
     } catch (error: any) {
@@ -220,9 +256,9 @@ export const useResultStore = create<ResultStore>((set, get) => ({
       if (data) {
         const session: AcademicSession = {
           id: data.id,
-          name: data.name,
-          isCurrent: data.isCurrent,
-          currentTerm: data.currentTerm,
+          name: data.current_Session || data.name || '',
+          isCurrent: data.isCurrent ?? true,
+          currentTerm: data.current_Term ?? data.currentTerm,
         };
         set({ currentSession: session, isLoading: false });
       } else {
@@ -273,4 +309,5 @@ export const useResultStore = create<ResultStore>((set, get) => ({
 
   clearError: () => set({ error: null }),
   clearStudents: () => set({ studentsForResult: [] }),
+  clearSubjects: () => set({ subjects: [] }),
 }));

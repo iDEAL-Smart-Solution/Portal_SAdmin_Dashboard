@@ -36,7 +36,7 @@ interface AcademicState {
 // Default branding data
 const defaultBranding: BrandingFormData = {
   SchoolName: 'iDEAL School Management System',
-  SchoolLogoFilePath: '/src/assets/logo.jpg'
+  SchoolLogoFilePath: undefined
 };
 
 export const useAcademicStore = create<AcademicState>((set, get) => ({
@@ -214,24 +214,26 @@ export const useAcademicStore = create<AcademicState>((set, get) => ({
   updateBranding: async (brandingData: UpdateBrandingRequest) => {
     set({ isLoading: true, error: null });
     try {
-      // Update current branding in local state
-      const updatedBranding: BrandingFormData = {
-        SchoolName: brandingData.SchoolName,
-        SchoolLogoFilePath: typeof brandingData.SchoolLogoFilePath === 'string' 
-          ? brandingData.SchoolLogoFilePath 
-          : get().currentBranding.SchoolLogoFilePath
-      };
+      const formData = new FormData();
+      formData.append('SchoolName', brandingData.SchoolName);
 
-      set({ 
-        currentBranding: updatedBranding,
-        isLoading: false 
+      if (brandingData.SchoolLogoFilePath instanceof File) {
+        formData.append('SchoolLogoFilePath', brandingData.SchoolLogoFilePath);
+      }
+
+      await axiosInstance.put('/AcademicSession/update-branding', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
-      // Note: Branding updates might need a separate endpoint in the backend
-      // For now, we'll update the local state and the session will reflect this
-      // when it's next fetched or updated
+      await get().fetchCurrentSession();
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message || 'Failed to update branding';
+      const errorMessage =
+        error.response?.data?.details ||
+        error.response?.data?.message ||
+        error.message ||
+        'Failed to update branding';
       set({ 
         error: errorMessage,
         isLoading: false 

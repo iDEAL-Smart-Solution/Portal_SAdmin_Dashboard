@@ -16,9 +16,11 @@ const UploadResult: React.FC<UploadResultProps> = ({ onBack, onSuccess }) => {
     fetchStudentsBySubject,
     fetchStudentList,
     fetchSubjects,
+    fetchSubjectsByClass,
     fetchCurrentSession,
     createResult,
     clearStudents,
+    clearSubjects,
     isLoading,
     error,
   } = useResultStore();
@@ -28,6 +30,7 @@ const UploadResult: React.FC<UploadResultProps> = ({ onBack, onSuccess }) => {
   const [searchMode, setSearchMode] = useState<'class' | 'subject' | 'search'>('class');
   const [selectedClass, setSelectedClass] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('');
+  const [subjectSearchText, setSubjectSearchText] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStudent, setSelectedStudent] = useState<string | null>(null);
   const [selectedTerm, setSelectedTerm] = useState<number>(1);
@@ -42,11 +45,44 @@ const UploadResult: React.FC<UploadResultProps> = ({ onBack, onSuccess }) => {
   });
 
   useEffect(() => {
-    fetchSubjects();
     fetchClassList();
     fetchCurrentSession();
-    return () => clearStudents();
-  }, [fetchSubjects, fetchClassList, fetchCurrentSession, clearStudents]);
+    return () => {
+      clearStudents();
+      clearSubjects();
+    };
+  }, [fetchClassList, fetchCurrentSession, clearStudents, clearSubjects]);
+
+  useEffect(() => {
+    if (searchMode !== 'class') {
+      return;
+    }
+
+    if (!selectedClass) {
+      clearSubjects();
+      setSelectedSubject('');
+      setSelectedStudent(null);
+      return;
+    }
+
+    fetchSubjectsByClass(selectedClass);
+    setSelectedSubject('');
+    setSelectedStudent(null);
+  }, [searchMode, selectedClass, fetchSubjectsByClass, clearSubjects]);
+
+  useEffect(() => {
+    if (searchMode !== 'subject') {
+      setSubjectSearchText('');
+      return;
+    }
+
+    fetchSubjects();
+  }, [searchMode, fetchSubjects]);
+
+  const filteredSubjects = subjects.filter(subject => {
+    if (!subjectSearchText.trim()) return true;
+    return subject.code.toLowerCase().includes(subjectSearchText.trim().toLowerCase());
+  });
 
   const handleLoadStudents = () => {
     if (searchMode === 'class' && selectedClass) {
@@ -71,6 +107,11 @@ const UploadResult: React.FC<UploadResultProps> = ({ onBack, onSuccess }) => {
       return;
     }
 
+    if (!currentSession.name) {
+      setFormError('Current academic session is not available. Please refresh and try again.');
+      return;
+    }
+
     const student = studentsForResult.find(s => s.id === selectedStudent);
     const subject = subjects.find(s => s.id === selectedSubject);
 
@@ -82,7 +123,7 @@ const UploadResult: React.FC<UploadResultProps> = ({ onBack, onSuccess }) => {
     const data: CreateResultRequest = {
       studentId: student.id,
       studentUin: student.uin,
-      subjectCode: subject.code,
+      subjectId: subject.id,
       first_CA_Score: scores.firstCA,
       second_CA_Score: scores.secondCA,
       third_CA_Score: scores.thirdCA,
@@ -158,7 +199,11 @@ const UploadResult: React.FC<UploadResultProps> = ({ onBack, onSuccess }) => {
           <div className="flex gap-4 mb-4">
             <button
               type="button"
-              onClick={() => { setSearchMode('class'); clearStudents(); }}
+              onClick={() => {
+                setSearchMode('class');
+                clearStudents();
+                setSearchTerm('');
+              }}
               className={`px-4 py-2 rounded-lg text-sm font-medium ${
                 searchMode === 'class'
                   ? 'bg-primary-100 text-primary-700 border-2 border-primary-500'
@@ -169,7 +214,12 @@ const UploadResult: React.FC<UploadResultProps> = ({ onBack, onSuccess }) => {
             </button>
             <button
               type="button"
-              onClick={() => { setSearchMode('subject'); clearStudents(); }}
+              onClick={() => {
+                setSearchMode('subject');
+                clearStudents();
+                setSelectedClass('');
+                setSearchTerm('');
+              }}
               className={`px-4 py-2 rounded-lg text-sm font-medium ${
                 searchMode === 'subject'
                   ? 'bg-primary-100 text-primary-700 border-2 border-primary-500'
@@ -180,7 +230,12 @@ const UploadResult: React.FC<UploadResultProps> = ({ onBack, onSuccess }) => {
             </button>
             <button
               type="button"
-              onClick={() => { setSearchMode('search'); clearStudents(); }}
+              onClick={() => {
+                setSearchMode('search');
+                clearStudents();
+                setSelectedClass('');
+                clearSubjects();
+              }}
               className={`px-4 py-2 rounded-lg text-sm font-medium ${
                 searchMode === 'search'
                   ? 'bg-primary-100 text-primary-700 border-2 border-primary-500'
@@ -197,7 +252,9 @@ const UploadResult: React.FC<UploadResultProps> = ({ onBack, onSuccess }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Select Class</label>
                 <select
                   value={selectedClass}
-                  onChange={(e) => setSelectedClass(e.target.value)}
+                  onChange={(e) => {
+                    setSelectedClass(e.target.value);
+                  }}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 >
                   <option value="">Choose a class</option>
@@ -210,6 +267,14 @@ const UploadResult: React.FC<UploadResultProps> = ({ onBack, onSuccess }) => {
 
             {searchMode === 'subject' && (
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Search Subject Code</label>
+                <input
+                  type="text"
+                  value={subjectSearchText}
+                  onChange={(e) => setSubjectSearchText(e.target.value)}
+                  placeholder="Type subject code..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 mb-2"
+                />
                 <label className="block text-sm font-medium text-gray-700 mb-1">Select Subject</label>
                 <select
                   value={selectedSubject}
@@ -217,8 +282,8 @@ const UploadResult: React.FC<UploadResultProps> = ({ onBack, onSuccess }) => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 >
                   <option value="">Choose a subject</option>
-                  {subjects.map(subject => (
-                    <option key={subject.id} value={subject.id}>{subject.code} - {subject.name}</option>
+                  {filteredSubjects.map(subject => (
+                    <option key={subject.id} value={subject.id}>{subject.code}</option>
                   ))}
                 </select>
               </div>
@@ -291,13 +356,21 @@ const UploadResult: React.FC<UploadResultProps> = ({ onBack, onSuccess }) => {
                 value={selectedSubject}
                 onChange={(e) => setSelectedSubject(e.target.value)}
                 required
+                disabled={searchMode === 'class' && !selectedClass}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               >
-                <option value="">Select subject</option>
+                <option value="">
+                  {searchMode === 'class' && !selectedClass ? 'Select a class first' : 'Select subject'}
+                </option>
                 {subjects.map(subject => (
-                  <option key={subject.id} value={subject.id}>{subject.code} - {subject.name}</option>
+                  <option key={subject.id} value={subject.id}>{subject.code}</option>
                 ))}
               </select>
+              {selectedClass && subjects.length === 0 && (
+                <p className="mt-1 text-xs text-gray-500">
+                  No subjects are assigned to the selected class yet.
+                </p>
+              )}
             </div>
 
             <div>
