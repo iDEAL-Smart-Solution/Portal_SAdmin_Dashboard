@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:5093/api/';
-// export const BASE_URL = "https://portal-api.idealsmartsolutions.com/api";
+// const BASE_URL = 'http://localhost:5093/api/';
+export const BASE_URL = "https://portal-api.idealsmartsolutions.com/api";
 
 const isSchoolAdminRole = (role?: string) => role?.trim().toLowerCase() === 'admin';
 
