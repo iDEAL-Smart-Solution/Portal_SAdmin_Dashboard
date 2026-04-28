@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useResultStore, CreateResultRequest } from '../../stores/result-store';
 import { useClassStore } from '../../stores/class-store';
+import { showError, showSuccess } from '../../lib/notifications';
 
 interface BulkUploadResultProps {
   onBack: () => void;
@@ -28,8 +29,6 @@ const BulkUploadResult: React.FC<BulkUploadResultProps> = ({ onBack, onSuccess }
   const [selectedClass, setSelectedClass] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('');
   const [selectedTerm, setSelectedTerm] = useState<number>(1);
-  const [formError, setFormError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState<{ current: number; total: number } | null>(null);
 
   // Bulk scores state
@@ -46,6 +45,12 @@ const BulkUploadResult: React.FC<BulkUploadResultProps> = ({ onBack, onSuccess }
     fetchCurrentSession();
     return () => clearStudents();
   }, [fetchSubjects, fetchClassList, fetchCurrentSession, clearStudents]);
+
+  useEffect(() => {
+    if (error) {
+      showError(error);
+    }
+  }, [error]);
 
   // Initialize bulk scores when students load
   useEffect(() => {
@@ -96,17 +101,15 @@ const BulkUploadResult: React.FC<BulkUploadResultProps> = ({ onBack, onSuccess }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormError(null);
-    setSuccess(null);
 
     if (!selectedSubject || !currentSession) {
-      setFormError('Please select a subject');
+      showError('Please select a subject');
       return;
     }
 
     const subject = subjects.find(s => s.id === selectedSubject);
     if (!subject) {
-      setFormError('Invalid subject selection');
+      showError('Invalid subject selection');
       return;
     }
 
@@ -117,7 +120,7 @@ const BulkUploadResult: React.FC<BulkUploadResultProps> = ({ onBack, onSuccess }
     });
 
     if (studentsToUpload.length === 0) {
-      setFormError('No scores to upload. Please enter scores for at least one student.');
+      showError('No scores to upload. Please enter scores for at least one student.');
       return;
     }
 
@@ -133,7 +136,7 @@ const BulkUploadResult: React.FC<BulkUploadResultProps> = ({ onBack, onSuccess }
       const data: CreateResultRequest = {
         studentId: student.id,
         studentUin: student.uin,
-        subjectCode: subject.code,
+        subjectId: subject.id,
         first_CA_Score: scores.firstCA,
         second_CA_Score: scores.secondCA,
         third_CA_Score: scores.thirdCA,
@@ -155,14 +158,14 @@ const BulkUploadResult: React.FC<BulkUploadResultProps> = ({ onBack, onSuccess }
     setUploadProgress(null);
 
     if (successCount > 0) {
-      setSuccess(`Successfully uploaded ${successCount} results${failCount > 0 ? `, ${failCount} failed` : ''}`);
+      showSuccess(`Successfully uploaded ${successCount} results${failCount > 0 ? `, ${failCount} failed` : ''}`);
       setBulkScores({});
       
       setTimeout(() => {
         onSuccess();
       }, 2000);
     } else {
-      setFormError(`Failed to upload all results`);
+      showError('Failed to upload all results');
     }
   };
 
@@ -192,30 +195,6 @@ const BulkUploadResult: React.FC<BulkUploadResultProps> = ({ onBack, onSuccess }
           Enter results for multiple students at once
         </p>
       </div>
-
-      {/* Success Message */}
-      {success && (
-        <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
-          <div className="flex">
-            <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            <p className="ml-3 text-sm text-green-700">{success}</p>
-          </div>
-        </div>
-      )}
-
-      {/* Error Message */}
-      {(error || formError) && (
-        <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
-          <div className="flex">
-            <svg className="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-            </svg>
-            <p className="ml-3 text-sm text-red-700">{error || formError}</p>
-          </div>
-        </div>
-      )}
 
       {/* Upload Progress */}
       {uploadProgress && (

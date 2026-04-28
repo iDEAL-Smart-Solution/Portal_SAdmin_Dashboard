@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../stores/auth-store';
 import { useAcademicStore } from '../../stores/academic-store';
 import { FileBaseUrl } from '../../lib/axios';
-import logo from '../../assets/logo.jpg';
 
 interface SidebarProps {
   activeModule: string;
@@ -11,37 +10,47 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ onModuleChange }) => {
-  const { logout } = useAuthStore();
+  const { logout, schoolInfo } = useAuthStore();
   const { currentBranding, fetchCurrentSession } = useAcademicStore();
   const navigate = useNavigate();
   const location = useLocation();
-  const [logoSrc, setLogoSrc] = useState(logo);
+  const [logoSrc, setLogoSrc] = useState('');
+  const [schoolName, setSchoolName] = useState('School');
 
   useEffect(() => {
     fetchCurrentSession();
   }, [fetchCurrentSession]);
 
+  // Update school info from auth store (priority over academic store)
   useEffect(() => {
-    const schoolLogoPath = currentBranding?.SchoolLogoFilePath;
+    if (schoolInfo?.name) {
+      setSchoolName(schoolInfo.name);
+    }
+  }, [schoolInfo?.name]);
 
-    if (typeof schoolLogoPath !== 'string' || !schoolLogoPath.trim()) {
-      setLogoSrc(logo);
+  // Update logo from auth store or academic store
+  useEffect(() => {
+    // Priority: schoolInfo.logo > currentBranding.SchoolLogoFilePath
+    let logoPath = schoolInfo?.logo || currentBranding?.SchoolLogoFilePath;
+
+    if (!logoPath || typeof logoPath !== 'string' || !logoPath.trim()) {
+      setLogoSrc('');
       return;
     }
 
-    if (schoolLogoPath.startsWith('/src/') || schoolLogoPath.startsWith('/assets/')) {
-      setLogoSrc(logo);
+    if (logoPath.startsWith('/src/') || logoPath.startsWith('/assets/')) {
+      setLogoSrc('');
       return;
     }
 
-    if (schoolLogoPath.startsWith('http://') || schoolLogoPath.startsWith('https://')) {
-      setLogoSrc(schoolLogoPath);
+    if (logoPath.startsWith('http://') || logoPath.startsWith('https://')) {
+      setLogoSrc(logoPath);
       return;
     }
 
-    const normalizedPath = schoolLogoPath.startsWith('/') ? schoolLogoPath.slice(1) : schoolLogoPath;
+    const normalizedPath = logoPath.startsWith('/') ? logoPath.slice(1) : logoPath;
     setLogoSrc(`${FileBaseUrl}/${normalizedPath}`);
-  }, [currentBranding?.SchoolLogoFilePath]);
+  }, [schoolInfo?.logo, currentBranding?.SchoolLogoFilePath]);
 
   // Get current module from URL
   const currentModule = location.pathname.substring(1) || 'academic';
@@ -220,21 +229,18 @@ const Sidebar: React.FC<SidebarProps> = ({ onModuleChange }) => {
       {/* Header */}
       <div className="flex items-center justify-center p-6 border-b border-neutral-200 flex-shrink-0">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full overflow-hidden bg-neutral-100">
-            <img
-              src={logoSrc}
-              alt="iDEAL Smart Solution Limited Logo"
-              className="w-full h-full object-cover"
-              onError={(event) => {
-                if (event.currentTarget.src !== logo) {
-                  event.currentTarget.src = logo;
-                }
-              }}
-            />
-          </div>
+          {logoSrc && (
+            <div className="w-10 h-10 rounded-full overflow-hidden bg-neutral-100">
+              <img
+                src={logoSrc}
+                alt="School Logo"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
           <div className="text-center">
-            <h1 className="text-lg font-bold text-text-primary">School Admin</h1>
-            <p className="text-xs text-text-tertiary">iDEAL System</p>
+            <h1 className="text-sm font-bold text-text-primary truncate max-w-xs">{schoolName}</h1>
+            <p className="text-xs text-text-tertiary">School Admin</p>
           </div>
         </div>
       </div>

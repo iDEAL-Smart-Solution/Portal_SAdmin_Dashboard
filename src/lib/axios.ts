@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getErrorMessage, showError, showSuccess } from './notifications';
 
 // const BASE_URL = 'http://localhost:5093/api/';
 export const BASE_URL = "https://portal-api.idealsmartsolutions.com/api";
@@ -10,6 +11,19 @@ export const FileBaseUrl = 'https://pub-3c097fbfc9714a69b02f7640ab008bd3.r2.dev'
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
 });
+
+const SUCCESS_METHODS = new Set(['post', 'put', 'patch', 'delete']);
+
+const getResponseMessage = (data: any): string | undefined => {
+  if (!data) return undefined;
+  if (typeof data === 'string') return data;
+  return data.message || data.details || data.error;
+};
+
+const isAuthLoginRequest = (config?: any) => {
+  const requestUrl = String(config?.url || '').toLowerCase();
+  return requestUrl.includes('/auth/login');
+};
 
 axiosInstance.interceptors.request.use(
   (config) => {
@@ -51,7 +65,17 @@ axiosInstance.interceptors.request.use(
 
 // Response interceptor to handle unauthorized responses
 axiosInstance.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    const method = response.config?.method?.toLowerCase();
+    const shouldShowSuccess = method ? SUCCESS_METHODS.has(method) && !isAuthLoginRequest(response.config) : false;
+
+    if (shouldShowSuccess) {
+      const message = getResponseMessage(response.data) || 'Operation completed successfully';
+      showSuccess(message);
+    }
+
+    return response;
+  },
   (error) => {
     if (error.response?.status === 401 || error.response?.status === 403) {
       // Clear session data on unauthorized/forbidden responses
@@ -62,6 +86,9 @@ axiosInstance.interceptors.response.use(
       // Reload the page to trigger login flow
       window.location.reload();
     }
+
+    showError(getErrorMessage(error));
+
     return Promise.reject(error);
   }
 );

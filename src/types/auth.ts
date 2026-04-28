@@ -18,6 +18,11 @@ export interface User {
   schoolId: string;
 }
 
+export interface SchoolInfo {
+  name: string;
+  logo: string | null;
+}
+
 export interface LoginApiResponse {
   success: boolean;
   message: string;
@@ -37,6 +42,7 @@ export interface LoginResponse {
 export interface AuthState {
   isAuthenticated: boolean;
   user: User | null;
+  schoolInfo: SchoolInfo | null;
   isLoading: boolean;
   error: string | null;
 }

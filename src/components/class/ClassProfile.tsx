@@ -8,6 +8,18 @@ interface ClassProfileProps {
 }
 
 const ClassProfile: React.FC<ClassProfileProps> = ({ classData, onEdit }) => {
+  // Defensive checks for data integrity
+  if (!classData) {
+    return (
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <p className="text-sm text-gray-500">No class data available</p>
+      </div>
+    );
+  }
+
+  const students = Array.isArray(classData.students) ? classData.students : [];
+  const subjects = Array.isArray(classData.subjects) ? classData.subjects : [];
+
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
       {/* Header */}
@@ -41,7 +53,7 @@ const ClassProfile: React.FC<ClassProfileProps> = ({ classData, onEdit }) => {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-blue-600">Total Students</p>
-                <p className="text-2xl font-semibold text-blue-900">{classData.students.length}</p>
+                <p className="text-2xl font-semibold text-blue-900">{students.length}</p>
               </div>
             </div>
           </div>
@@ -55,7 +67,7 @@ const ClassProfile: React.FC<ClassProfileProps> = ({ classData, onEdit }) => {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-green-600">Total Subjects</p>
-                <p className="text-2xl font-semibold text-green-900">{classData.subjects.length}</p>
+                <p className="text-2xl font-semibold text-green-900">{subjects.length}</p>
               </div>
             </div>
           </div>
@@ -63,10 +75,10 @@ const ClassProfile: React.FC<ClassProfileProps> = ({ classData, onEdit }) => {
 
         {/* Students Section */}
         <div className="mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Students ({classData.students.length})</h3>
-          {classData.students.length > 0 ? (
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Students ({students.length})</h3>
+          {students.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {classData.students.map((student: ClassStudent) => (
+              {students.map((student: ClassStudent) => (
                 <div key={student.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                   <div className="flex items-center space-x-3">
                     <div className="flex-shrink-0">
@@ -107,10 +119,10 @@ const ClassProfile: React.FC<ClassProfileProps> = ({ classData, onEdit }) => {
 
         {/* Subjects Section */}
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Subjects ({classData.subjects.length})</h3>
-          {classData.subjects.length > 0 ? (
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Subjects ({subjects.length})</h3>
+          {subjects.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {classData.subjects.map((subject: ClassSubject) => (
+              {subjects.map((subject: ClassSubject) => (
                 <div key={subject.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">

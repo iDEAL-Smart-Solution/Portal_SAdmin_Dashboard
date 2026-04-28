@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import ClassList from '../../components/class/ClassList';
+import AddClass from './AddClass';
+import EditClass from './EditClass';
+import ClassProfilePage from './ClassProfilePage';
 
 type ClassView = 'list' | 'add' | 'edit' | 'profile';
 
@@ -73,11 +77,5 @@ const ClassManagement: React.FC<ClassManagementProps> = () => {
     </div>
   );
 };
-
-// Import components here to avoid circular dependencies
-import ClassList from '../../components/class/ClassList';
-import AddClass from './AddClass';
-import EditClass from './EditClass';
-import ClassProfilePage from './ClassProfilePage';
 
 export default ClassManagement;

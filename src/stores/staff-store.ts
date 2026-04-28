@@ -7,6 +7,7 @@ import {
   StaffApiResponse
 } from '../types/staff';
 import axiosInstance from '../lib/axios';
+import { showSuccess, showError } from '../lib/notifications';
 
 interface StaffState {
   // Staff list
@@ -145,14 +146,37 @@ export const useStaffStore = create<StaffState>((set, get) => ({
     }
   },
 
-  updateStaff: async (_id: string, _staffData: UpdateStaffRequest) => {
+  updateStaff: async (id: string, staffData: UpdateStaffRequest) => {
     set({ isLoading: true, error: null });
     try {
-      // Note: Backend doesn't have update endpoint, so we'll handle this gracefully
-      // For now, we'll show an error indicating update is not supported
-      throw new Error('Update staff functionality is not available in the backend API');
+      // Prepare form data for multipart request
+      const formData = new FormData();
+      formData.append('firstName', staffData.firstName);
+      formData.append('lastName', staffData.lastName);
+      formData.append('email', staffData.email);
+      formData.append('phoneNumber', staffData.phoneNumber);
+      formData.append('address', staffData.address);
+      formData.append('gender', staffData.gender);
+      formData.append('userName', staffData.userName);
+      
+      if (staffData.profilePicture instanceof File) {
+        formData.append('profilePicture', staffData.profilePicture);
+      }
+
+      await axiosInstance.put(`/Staff/update-staff/${id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      // Refresh the selected staff data after update
+      await get().fetchStaffById(id);
+      
+      // Show success toast
+      showSuccess('Staff member updated successfully');
+      
+      set({ isLoading: false });
     } catch (error: any) {
-      // Handle API error responses with details field
       let errorMessage = 'Failed to update staff member';
       
       if (error.response?.data?.details) {
@@ -163,6 +187,7 @@ export const useStaffStore = create<StaffState>((set, get) => ({
         errorMessage = error.message;
       }
       
+      showError(errorMessage);
       set({ 
         error: errorMessage,
         isLoading: false 

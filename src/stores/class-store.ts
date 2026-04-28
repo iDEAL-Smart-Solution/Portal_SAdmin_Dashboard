@@ -3,8 +3,7 @@ import {
   CreateClassRequest, 
   UpdateClassRequest, 
   GetClassResponse, 
-  GetAClassResponse,
-  ClassApiResponse
+  GetAClassResponse
 } from '../types/class';
 import axiosInstance from '../lib/axios';
 
@@ -50,8 +49,35 @@ export const useClassStore = create<ClassState>((set, get) => ({
   fetchClassById: async (id: string) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axiosInstance.get<ClassApiResponse>(`/Class/get-class-by-id?id=${id}`);
-      set({ selectedClass: response.data.data, isLoading: false });
+      const response = await axiosInstance.get<any>(`/Class/get-class-by-id?id=${id}`);
+      
+      // Handle both possible response formats:
+      // 1. GetResponse<GetAClassResponse> format: { statusCode, message, data: {...} }
+      // 2. Direct format: {...}
+      const classData = response.data?.data || response.data?.Data || response.data;
+      
+      if (!classData || !classData.id) {
+        throw new Error('Invalid class data received from server');
+      }
+      
+      // Map API field names to frontend field names and ensure arrays
+      // API uses singular: 'student', 'subject'
+      // Frontend expects plural: 'students', 'subjects'
+      const normalizedData = {
+        ...classData,
+        students: Array.isArray(classData.students) 
+          ? classData.students 
+          : Array.isArray(classData.student) 
+            ? classData.student 
+            : [],
+        subjects: Array.isArray(classData.subjects) 
+          ? classData.subjects 
+          : Array.isArray(classData.subject) 
+            ? classData.subject 
+            : []
+      };
+      
+      set({ selectedClass: normalizedData, isLoading: false });
     } catch (error: any) {
       const errorMessage = error.response?.data?.details || 
                           error.response?.data?.message || 

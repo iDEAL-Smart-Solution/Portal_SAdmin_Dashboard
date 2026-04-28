@@ -18,6 +18,7 @@ import PaymentVerification from './pages/payment-verification'
 import SystemConfigManagement from './pages/system-config'
 import ResultManagement from './pages/result'
 import RemarkTemplateManagement from './pages/remark-templates/RemarkTemplateManagement'
+import { Toaster } from 'sonner'
 
 const isSchoolAdminRole = (role?: string) => role?.trim().toLowerCase() === 'admin'
 
@@ -73,6 +74,7 @@ function App() {
   return (
     <Router>
       <AppContent />
+      <Toaster position="top-right" richColors closeButton duration={3500} />
     </Router>
   )
 }

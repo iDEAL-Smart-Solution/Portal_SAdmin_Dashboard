@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useResultStore, CreateResultRequest } from '../../stores/result-store';
 import { useClassStore } from '../../stores/class-store';
+import { showError, showSuccess } from '../../lib/notifications';
 
 interface UploadResultProps {
   onBack: () => void;
@@ -34,8 +35,6 @@ const UploadResult: React.FC<UploadResultProps> = ({ onBack, onSuccess }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStudent, setSelectedStudent] = useState<string | null>(null);
   const [selectedTerm, setSelectedTerm] = useState<number>(1);
-  const [formError, setFormError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
   const [scores, setScores] = useState({
     firstCA: 0,
@@ -52,6 +51,12 @@ const UploadResult: React.FC<UploadResultProps> = ({ onBack, onSuccess }) => {
       clearSubjects();
     };
   }, [fetchClassList, fetchCurrentSession, clearStudents, clearSubjects]);
+
+  useEffect(() => {
+    if (error) {
+      showError(error);
+    }
+  }, [error]);
 
   useEffect(() => {
     if (searchMode !== 'class') {
@@ -99,16 +104,14 @@ const UploadResult: React.FC<UploadResultProps> = ({ onBack, onSuccess }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormError(null);
-    setSuccess(null);
 
     if (!selectedStudent || !selectedSubject || !currentSession) {
-      setFormError('Please select a student and subject');
+      showError('Please select a student and subject');
       return;
     }
 
     if (!currentSession.name) {
-      setFormError('Current academic session is not available. Please refresh and try again.');
+      showError('Current academic session is not available. Please refresh and try again.');
       return;
     }
 
@@ -116,7 +119,7 @@ const UploadResult: React.FC<UploadResultProps> = ({ onBack, onSuccess }) => {
     const subject = subjects.find(s => s.id === selectedSubject);
 
     if (!student || !subject) {
-      setFormError('Invalid student or subject selection');
+      showError('Invalid student or subject selection');
       return;
     }
 
@@ -134,7 +137,7 @@ const UploadResult: React.FC<UploadResultProps> = ({ onBack, onSuccess }) => {
 
     try {
       await createResult(data);
-      setSuccess('Result uploaded successfully!');
+      showSuccess('Result uploaded successfully!');
       setScores({ firstCA: 0, secondCA: 0, thirdCA: 0, exam: 0 });
       setSelectedStudent(null);
       
@@ -142,7 +145,7 @@ const UploadResult: React.FC<UploadResultProps> = ({ onBack, onSuccess }) => {
         onSuccess();
       }, 1500);
     } catch (err: any) {
-      setFormError(err.message || 'Failed to upload result');
+      showError(err.message || 'Failed to upload result');
     }
   };
 
@@ -166,30 +169,6 @@ const UploadResult: React.FC<UploadResultProps> = ({ onBack, onSuccess }) => {
           Enter result for a single student
         </p>
       </div>
-
-      {/* Success Message */}
-      {success && (
-        <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
-          <div className="flex">
-            <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            <p className="ml-3 text-sm text-green-700">{success}</p>
-          </div>
-        </div>
-      )}
-
-      {/* Error Message */}
-      {(error || formError) && (
-        <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
-          <div className="flex">
-            <svg className="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-            </svg>
-            <p className="ml-3 text-sm text-red-700">{error || formError}</p>
-          </div>
-        </div>
-      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Search Mode Selection */}

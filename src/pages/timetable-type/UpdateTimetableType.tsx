@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTimetableStore } from '../../stores/timetable-store';
 import { UpdateTimeTableTypeRequest } from '../../types/timetable';
+import { showError } from '../../lib/notifications';
 
 interface UpdateTimetableTypeProps {
   typeId: string;
@@ -15,7 +16,6 @@ const UpdateTimetableType: React.FC<UpdateTimetableTypeProps> = ({ typeId, onBac
     name: '',
     description: '',
   });
-  const [error, setError] = useState<string>('');
 
   useEffect(() => {
     fetchTimetableTypeById(typeId);
@@ -31,17 +31,22 @@ const UpdateTimetableType: React.FC<UpdateTimetableTypeProps> = ({ typeId, onBac
     }
   }, [selectedTimetableType]);
 
+  useEffect(() => {
+    if (storeError) {
+      showError(storeError);
+    }
+  }, [storeError]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
 
     if (!formData.name.trim()) {
-      setError('Name is required');
+      showError('Name is required');
       return;
     }
 
     if (!formData.description.trim()) {
-      setError('Description is required');
+      showError('Description is required');
       return;
     }
 
@@ -49,7 +54,7 @@ const UpdateTimetableType: React.FC<UpdateTimetableTypeProps> = ({ typeId, onBac
       await updateTimetableType(typeId, formData);
       onSuccess();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to update timetable type');
+      showError(err.response?.data?.message || 'Failed to update timetable type');
     }
   };
 
@@ -77,13 +82,6 @@ const UpdateTimetableType: React.FC<UpdateTimetableTypeProps> = ({ typeId, onBac
             Update the timetable type information
           </p>
         </div>
-
-        {/* Error Message */}
-        {(error || storeError) && (
-          <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
-            <p className="text-sm text-red-800">{error || storeError}</p>
-          </div>
-        )}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="bg-white shadow rounded-lg p-6 space-y-6">

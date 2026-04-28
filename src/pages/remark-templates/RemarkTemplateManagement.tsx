@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRemarkTemplateStore, type CreateRemarkTemplateRequest, type UpdateRemarkTemplateRequest, type RemarkTemplateResponse } from '../../stores/remark-template-store';
+import { showError, showInfo, showSuccess } from '../../lib/notifications';
 
 const RemarkTemplateManagement: React.FC = () => {
   const {
@@ -17,11 +18,16 @@ const RemarkTemplateManagement: React.FC = () => {
   const [editingTemplate, setEditingTemplate] = useState<RemarkTemplateResponse | null>(null);
   const [formData, setFormData] = useState({ minPercentage: 0, maxPercentage: 100, remarkText: '' });
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     fetchTemplates();
   }, [fetchTemplates]);
+
+  useEffect(() => {
+    if (error) {
+      showError(error);
+    }
+  }, [error]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,14 +40,13 @@ const RemarkTemplateManagement: React.FC = () => {
           ...formData,
         };
         await updateTemplate(updateData);
-        setSuccessMessage('Remark template updated successfully!');
+        showSuccess('Remark template updated successfully!');
       } else {
         const createData: CreateRemarkTemplateRequest = { ...formData };
         await createTemplate(createData);
-        setSuccessMessage('Remark template created successfully!');
+        showSuccess('Remark template created successfully!');
       }
       resetForm();
-      setTimeout(() => setSuccessMessage(''), 3000);
     } catch {
       // Error is handled by store
     }
@@ -61,8 +66,7 @@ const RemarkTemplateManagement: React.FC = () => {
     try {
       await deleteTemplate(id);
       setDeleteConfirm(null);
-      setSuccessMessage('Remark template deleted successfully!');
-      setTimeout(() => setSuccessMessage(''), 3000);
+      showSuccess('Remark template deleted successfully!');
     } catch {
       // Error is handled by store
     }
@@ -96,8 +100,7 @@ const RemarkTemplateManagement: React.FC = () => {
         // Skip if overlap error
       }
     }
-    setSuccessMessage('Default templates loaded!');
-    setTimeout(() => setSuccessMessage(''), 3000);
+    showInfo('Default templates loaded!');
   };
 
   return (
@@ -128,19 +131,6 @@ const RemarkTemplateManagement: React.FC = () => {
           </button>
         </div>
       </div>
-
-      {/* Success/Error Messages */}
-      {successMessage && (
-        <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
-          {successMessage}
-        </div>
-      )}
-      {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-          {error}
-          <button onClick={clearError} className="ml-2 text-red-500 underline text-xs">Dismiss</button>
-        </div>
-      )}
 
       {/* Create/Edit Form */}
       {showForm && (

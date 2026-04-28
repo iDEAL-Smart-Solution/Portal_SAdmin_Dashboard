@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { LoginResponse, AuthState, LoginApiResponse } from '../types/auth';
+import { LoginResponse, AuthState, LoginApiResponse, SchoolInfo } from '../types/auth';
 import axiosInstance from '../lib/axios';
 
 const isSchoolAdminRole = (role?: string) => role?.trim().toLowerCase() === 'admin';
@@ -18,6 +18,7 @@ interface AuthStore extends AuthState {
 const initializeAuth = () => {
   const token = sessionStorage.getItem('token');
   const userStr = sessionStorage.getItem('user');
+  const schoolInfoStr = sessionStorage.getItem('schoolInfo');
   
   if (token && userStr) {
     try {
@@ -29,18 +30,31 @@ const initializeAuth = () => {
         sessionStorage.removeItem('token');
         sessionStorage.removeItem('user');
         sessionStorage.removeItem('SchoolId');
+        sessionStorage.removeItem('schoolInfo');
         
         return {
           isAuthenticated: false,
           user: null,
+          schoolInfo: null,
           isLoading: false,
           error: ACCESS_DENIED_MESSAGE
         };
+      }
+
+      // Load schoolInfo if available
+      let schoolInfo: SchoolInfo | null = null;
+      if (schoolInfoStr) {
+        try {
+          schoolInfo = JSON.parse(schoolInfoStr);
+        } catch {
+          schoolInfo = null;
+        }
       }
       
       return {
         isAuthenticated: true,
         user,
+        schoolInfo,
         isLoading: false,
         error: null
       };
@@ -49,12 +63,14 @@ const initializeAuth = () => {
       sessionStorage.removeItem('token');
       sessionStorage.removeItem('user');
       sessionStorage.removeItem('SchoolId');
+      sessionStorage.removeItem('schoolInfo');
     }
   }
   
   return {
     isAuthenticated: false,
     user: null,
+    schoolInfo: null,
     isLoading: false,
     error: null
   };
@@ -85,6 +101,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           sessionStorage.removeItem('token');
           sessionStorage.removeItem('user');
           sessionStorage.removeItem('SchoolId');
+          sessionStorage.removeItem('schoolInfo');
 
           set({ 
             error: ACCESS_DENIED_MESSAGE,
@@ -102,9 +119,32 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         sessionStorage.setItem('user', JSON.stringify(user));
         sessionStorage.setItem('SchoolId', user.schoolId);
 
+        // Fetch school info
+        let schoolInfo: SchoolInfo | null = null;
+        try {
+          const schoolResponse = await axiosInstance.get<any>('/AcademicSession/get-current-session');
+          if (schoolResponse.data?.data) {
+            const schoolData = schoolResponse.data.data;
+            schoolInfo = {
+              name: schoolData.schoolName || 'School',
+              logo: schoolData.schoolLogoFilePath || null
+            };
+            sessionStorage.setItem('schoolInfo', JSON.stringify(schoolInfo));
+          }
+        } catch (schoolError) {
+          // School info fetch failed, but login is still successful
+          // Use default values
+          schoolInfo = {
+            name: 'School',
+            logo: null
+          };
+          sessionStorage.setItem('schoolInfo', JSON.stringify(schoolInfo));
+        }
+
         set({ 
           isAuthenticated: true, 
-          user: user, 
+          user: user,
+          schoolInfo: schoolInfo,
           isLoading: false 
         });
         
@@ -170,10 +210,12 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('user');
     sessionStorage.removeItem('SchoolId');
+    sessionStorage.removeItem('schoolInfo');
 
     set({ 
       isAuthenticated: false, 
-      user: null, 
+      user: null,
+      schoolInfo: null,
       error: null 
     });
   },

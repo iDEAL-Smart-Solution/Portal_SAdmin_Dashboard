@@ -9,6 +9,7 @@ import {
   CreateMultipleTimetableEntriesDto,
 } from '../../types/timetable';
 import { Plus, Trash2 } from 'lucide-react';
+import { showError } from '../../lib/notifications';
 
 interface TimetableFormProps {
   classId?: string;
@@ -52,7 +53,6 @@ const TimetableForm: React.FC<TimetableFormProps> = ({ classId, onBack, onSucces
       slots: [],
     }))
   );
-  const [error, setError] = useState<string>('');
 
   useEffect(() => {
     fetchClassList();
@@ -107,22 +107,21 @@ const TimetableForm: React.FC<TimetableFormProps> = ({ classId, onBack, onSucces
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
 
     if (!selectedClassId) {
-      setError('Please select a class');
+      showError('Please select a class');
       return;
     }
 
     if (!selectedTypeId) {
-      setError('Please select a timetable type');
+      showError('Please select a timetable type');
       return;
     }
 
     // Validate that at least one day has slots
     const hasSlots = schedules.some(schedule => schedule.slots.length > 0);
     if (!hasSlots) {
-      setError('Please add at least one time slot');
+      showError('Please add at least one time slot');
       return;
     }
 
@@ -130,13 +129,13 @@ const TimetableForm: React.FC<TimetableFormProps> = ({ classId, onBack, onSucces
     for (const schedule of schedules) {
       for (const slot of schedule.slots) {
         if (!slot.subjectId || !slot.staffId || !slot.startTime || !slot.endTime) {
-          setError(`Please fill all fields for ${DAYS_OF_WEEK.find(d => d.value === schedule.day)?.label}`);
+          showError(`Please fill all fields for ${DAYS_OF_WEEK.find(d => d.value === schedule.day)?.label}`);
           return;
         }
 
         // Validate time format and logic
         if (slot.startTime >= slot.endTime) {
-          setError(`End time must be after start time for ${DAYS_OF_WEEK.find(d => d.value === schedule.day)?.label}`);
+          showError(`End time must be after start time for ${DAYS_OF_WEEK.find(d => d.value === schedule.day)?.label}`);
           return;
         }
       }
@@ -165,7 +164,7 @@ const TimetableForm: React.FC<TimetableFormProps> = ({ classId, onBack, onSucces
       await createTimetable(data);
       onSuccess();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to create timetable');
+      showError(err.response?.data?.message || 'Failed to create timetable');
     }
   };
 
@@ -185,13 +184,6 @@ const TimetableForm: React.FC<TimetableFormProps> = ({ classId, onBack, onSucces
             Set up class schedule with subjects, staff, and time slots for each day
           </p>
         </div>
-
-        {/* Error Message */}
-        {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
-            <p className="text-sm text-red-800">{error}</p>
-          </div>
-        )}
 
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Basic Info */}
