@@ -19,6 +19,8 @@ interface PaymentState {
   isLoading: boolean;
   error: string | null;
   fetchPayments: () => Promise<void>;
+  verifyPayment: (reference: string) => Promise<{ success: boolean; message: string }>;
+  clearError: () => void;
 }
 
 export const usePaymentStore = create<PaymentState>((set) => ({
@@ -38,4 +40,20 @@ export const usePaymentStore = create<PaymentState>((set) => ({
       });
     }
   },
+
+  verifyPayment: async (reference: string) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await axiosInstance.post(`/Payment/verify?reference=${reference.trim()}`);
+      const message = response.data?.message || 'Payment verified successfully';
+      set({ isLoading: false, error: null });
+      return { success: true, message };
+    } catch (error: any) {
+      const message = error.response?.data?.message || error.message || 'Failed to verify payment';
+      set({ isLoading: false, error: message });
+      return { success: false, message };
+    }
+  },
+
+  clearError: () => set({ error: null }),
 }));

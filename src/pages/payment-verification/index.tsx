@@ -1,36 +1,33 @@
 import { useState } from 'react';
-import axios from '../../lib/axios';
+import { usePaymentStore } from '../../stores/payment-store';
 
 export default function PaymentVerification() {
   const [reference, setReference] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
+  const { verifyPayment, isLoading } = usePaymentStore();
 
   const handleVerifyPayment = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!reference.trim()) {
       setResult({ success: false, message: 'Please enter a payment reference' });
       return;
     }
 
-    setIsLoading(true);
     setResult(null);
 
     try {
-      const response = await axios.post(`/Payment/verify?reference=${reference.trim()}`);
-      setResult({ 
-        success: true, 
-        message: response.data.message || 'Payment verified successfully' 
+      const verificationResult = await verifyPayment(reference);
+      setResult(verificationResult);
+
+      if (verificationResult.success) {
+        setReference(''); // Clear input on success
+      }
+    } catch {
+      setResult({
+        success: false,
+        message: 'Failed to verify payment',
       });
-      setReference(''); // Clear input on success
-    } catch (error: any) {
-      setResult({ 
-        success: false, 
-        message: error.response?.data?.message || 'Failed to verify payment' 
-      });
-    } finally {
-      setIsLoading(false);
     }
   };
 
