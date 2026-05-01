@@ -19,6 +19,7 @@ import SystemConfigManagement from './pages/system-config'
 import ResultManagement from './pages/result'
 import RemarkTemplateManagement from './pages/remark-templates/RemarkTemplateManagement'
 import { Toaster } from 'sonner'
+import { ThemeBootstrap } from './components/ThemeBootstrap.tsx'
 
 const isSchoolAdminRole = (role?: string) => role?.trim().toLowerCase() === 'admin'
 
@@ -73,6 +74,7 @@ function AppContent() {
 function App() {
   return (
     <Router>
+      <ThemeBootstrap />
       <AppContent />
       <Toaster position="top-right" richColors closeButton duration={3500} />
     </Router>

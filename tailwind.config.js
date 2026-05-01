@@ -15,33 +15,30 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Custom blue theme based on #3da5f5
         primary: {
-          50: '#f0f8ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#3da5f5', // Main primary blue
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
+          50: 'var(--primary-50)',
+          100: 'var(--primary-100)',
+          200: 'var(--primary-200)',
+          300: 'var(--primary-300)',
+          400: 'var(--primary-400)',
+          500: 'var(--primary-500)',
+          600: 'var(--primary-600)',
+          700: 'var(--primary-700)',
+          800: 'var(--primary-800)',
+          900: 'var(--primary-900)',
         },
-        // Custom red theme based on #f7020b
         accent: {
-          50: '#fef2f2',
-          100: '#fee2e2',
-          200: '#fecaca',
-          300: '#fca5a5',
-          400: '#f87171',
-          500: '#f7020b', // Main accent red
-          600: '#dc2626',
-          700: '#b91c1c',
-          800: '#991b1b',
-          900: '#7f1d1d',
+          50: 'var(--accent-50)',
+          100: 'var(--accent-100)',
+          200: 'var(--accent-200)',
+          300: 'var(--accent-300)',
+          400: 'var(--accent-400)',
+          500: 'var(--accent-500)',
+          600: 'var(--accent-600)',
+          700: 'var(--accent-700)',
+          800: 'var(--accent-800)',
+          900: 'var(--accent-900)',
         },
-        // Neutral grays with blue undertones
         neutral: {
           50: '#f8fafc',
           100: '#f1f5f9',
@@ -54,7 +51,6 @@ export default {
           800: '#1e293b',
           900: '#0f172a',
         },
-        // Semantic colors
         success: {
           50: '#f0fdf4',
           100: '#dcfce7',
@@ -79,19 +75,20 @@ export default {
           800: '#92400e',
           900: '#78350f',
         },
-        // Background colors
         background: {
-          primary: '#ffffff',
-          secondary: '#f8fafc',
-          tertiary: '#f1f5f9',
+          primary: 'var(--bg-primary)',
+          secondary: 'var(--bg-secondary)',
+          tertiary: 'var(--bg-tertiary)',
         },
-        // Text colors
         text: {
-          primary: '#0369a1', // Primary blue for headings
-          secondary: '#0284c7', // Lighter blue for subheadings
-          tertiary: '#38bdf8', // Blue for body text
-          inverse: '#ffffff',
-        }
+          primary: 'var(--text-primary)',
+          secondary: 'var(--text-secondary)',
+          tertiary: 'var(--text-tertiary)',
+          inverse: 'var(--text-inverse)',
+        },
+        border: {
+          DEFAULT: 'var(--border-color)',
+        },
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
