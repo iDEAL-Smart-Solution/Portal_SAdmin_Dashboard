@@ -119,6 +119,17 @@ const Sidebar: React.FC<SidebarProps> = ({ onModuleChange }) => {
       disabled: false
     },
     {
+      id: 'performance',
+      name: 'Performance',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 17a4 4 0 100-8 4 4 0 000 8zm6-2v4m-12-4v4M7 7h10" />
+        </svg>
+      ),
+      description: 'School-wide performance analytics',
+      disabled: false
+    },
+    {
       id: 'result',
       name: 'Results',
       icon: (

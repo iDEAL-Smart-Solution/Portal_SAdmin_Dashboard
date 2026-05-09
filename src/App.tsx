@@ -17,6 +17,7 @@ import PaymentTypeManagement from './pages/payment-type'
 import PaymentVerification from './pages/payment-verification'
 import SystemConfigManagement from './pages/system-config'
 import ResultManagement from './pages/result'
+import PerformancePage from './pages/performance/PerformancePage'
 import RemarkTemplateManagement from './pages/remark-templates/RemarkTemplateManagement'
 import { Toaster } from 'sonner'
 import { ThemeBootstrap } from './components/ThemeBootstrap.tsx'
@@ -54,6 +55,7 @@ function AppContent() {
             <Route path="/class" element={<ClassManagement onBack={() => {}} />} />
             <Route path="/subject" element={<SubjectManagement onBack={() => {}} />} />
             <Route path="/result" element={<ResultManagement />} />
+            <Route path="/performance" element={<PerformancePage />} />
             <Route path="/remark-templates" element={<RemarkTemplateManagement />} />
             <Route path="/resource-type" element={<ResourceTypeManagement />} />
             <Route path="/timetable-type" element={<TimetableTypeManagement />} />
