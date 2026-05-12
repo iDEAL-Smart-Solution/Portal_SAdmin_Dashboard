@@ -37,16 +37,19 @@ export default function PaymentTypeManagement() {
 
   return (
     <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-text-primary">Payment Types</h1>
-        <p className="text-text-secondary">Manage payment categories and amounts</p>
-      </div>
-      <div className="flex justify-end">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-text-primary">Payment Types</h1>
+          <p className="text-text-secondary">Manage payment categories and amounts</p>
+        </div>
         <button
-          onClick={() => setIsCreateModalOpen(true)}
-          className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors flex items-center gap-2"
+          onClick={() => {
+            setEditingType(null);
+            setIsCreateModalOpen(true);
+          }}
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-500 px-4 py-2 text-white shadow-primary transition-colors hover:bg-primary-600 lg:self-start"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
           Add Payment Type
@@ -306,7 +309,7 @@ function PaymentTypeModal({ isOpen, editingType, onClose, onSuccess }: any) {
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isLoading}
             >
               {isLoading ? 'Saving...' : editingType ? 'Update' : 'Create'}
