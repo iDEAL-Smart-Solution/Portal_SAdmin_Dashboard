@@ -59,7 +59,7 @@ export default function SignatureUploaderClean({ studentId, isPrincipal = false,
         }}
         className="block w-full rounded-lg border border-neutral-300 bg-white text-sm text-text-secondary file:mr-4 file:rounded-md file:border-0 file:bg-primary-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-primary-700 hover:file:bg-primary-100"
       />
-      <p className="mt-2 text-xs text-text-tertiary">Accepted: image files only, max size 100KB.</p>
+      <p className="mt-2 text-xs text-text-tertiary">Accepted file types: .jpg, .jpeg, .png only. Maximum file size: 100KB.</p>
 
       {error && <div className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">{error}</div>}
       {successMessage && <div className="mt-3 rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">{successMessage}</div>}
