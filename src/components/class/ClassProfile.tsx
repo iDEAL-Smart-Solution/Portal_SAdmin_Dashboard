@@ -1,13 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { GetAClassResponse, ClassStudent, ClassSubject } from '../../types/class';
 import { FileBaseUrl } from '../../lib/axios';
+import { useClassStore } from '../../stores/class-store';
+import axiosInstance from '../../lib/axios';
+import { showSuccess, showError } from '../../lib/notifications';
+import { UserCheck, UserPlus, X, Loader2 } from 'lucide-react';
 
 interface ClassProfileProps {
   classData: GetAClassResponse;
   onEdit: () => void;
 }
 
+interface StaffMember {
+  id: string;
+  fullName: string;
+  email?: string;
+}
+
 const ClassProfile: React.FC<ClassProfileProps> = ({ classData, onEdit }) => {
+  const { assignClassTeacher } = useClassStore();
+
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [staffList, setStaffList] = useState<StaffMember[]>([]);
+  const [isLoadingStaff, setIsLoadingStaff] = useState(false);
+  const [selectedStaffId, setSelectedStaffId] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [assignError, setAssignError] = useState<string | null>(null);
+
   // Defensive checks for data integrity
   if (!classData) {
     return (
@@ -20,6 +39,75 @@ const ClassProfile: React.FC<ClassProfileProps> = ({ classData, onEdit }) => {
   const students = Array.isArray(classData.students) ? classData.students : [];
   const subjects = Array.isArray(classData.subjects) ? classData.subjects : [];
 
+  const currentTeacherName =
+    classData.classTeacherName ||
+    classData.teacherName ||
+    classData.classTeacher?.fullName ||
+    classData.classTeacher?.name ||
+    null;
+
+  const currentTeacherId =
+    classData.classTeacherId ||
+    classData.teacherId ||
+    classData.classTeacher?.id ||
+    '';
+
+  const handleOpenAssignModal = async () => {
+    setIsAssignModalOpen(true);
+    setSelectedStaffId(currentTeacherId);
+    setAssignError(null);
+    setIsLoadingStaff(true);
+
+    try {
+      const response = await axiosInstance.get('/Staff/get-staffs-with-spec?param=');
+      const data = response.data || [];
+      const formattedStaff: StaffMember[] = data.map((staff: any) => ({
+        id: staff.id,
+        fullName: staff.fullName || `${staff.firstName || ''} ${staff.lastName || ''}`.trim() || 'Unnamed Staff',
+        email: staff.email || ''
+      }));
+      setStaffList(formattedStaff);
+    } catch (err: any) {
+      console.error('Failed to fetch staff list:', err);
+      setAssignError('Failed to load staff list. Please try again.');
+    } finally {
+      setIsLoadingStaff(false);
+    }
+  };
+
+  const handleCloseAssignModal = () => {
+    if (isSubmitting) return;
+    setIsAssignModalOpen(false);
+    setAssignError(null);
+  };
+
+  const handleAssignSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!selectedStaffId) {
+      setAssignError('Please select a teacher to assign.');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      setAssignError(null);
+      await assignClassTeacher(classData.id, selectedStaffId);
+      showSuccess('Class Teacher assigned successfully');
+      setIsAssignModalOpen(false);
+    } catch (err: any) {
+      const errorMessage =
+        err.response?.data?.details ||
+        err.response?.data?.message ||
+        err.message ||
+        'Failed to assign class teacher';
+      setAssignError(errorMessage);
+      showError(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
       {/* Header */}
@@ -29,21 +117,41 @@ const ClassProfile: React.FC<ClassProfileProps> = ({ classData, onEdit }) => {
             <h2 className="text-xl font-semibold text-gray-900">{classData.name}</h2>
             <p className="text-sm text-gray-500 mt-1">Class Details</p>
           </div>
-          <button
-            onClick={onEdit}
-            className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-            Update Class
-          </button>
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={handleOpenAssignModal}
+              className="inline-flex items-center px-3 py-2 border border-blue-600 shadow-sm text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+            >
+              {currentTeacherName ? (
+                <>
+                  <UserCheck className="w-4 h-4 mr-2 text-blue-600" />
+                  Change Class Teacher
+                </>
+              ) : (
+                <>
+                  <UserPlus className="w-4 h-4 mr-2 text-blue-600" />
+                  Assign Class Teacher
+                </>
+              )}
+            </button>
+
+            <button
+              onClick={onEdit}
+              className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              Update Class
+            </button>
+          </div>
         </div>
       </div>
 
       <div className="p-6">
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* Total Students */}
           <div className="bg-blue-50 rounded-lg p-4">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -58,6 +166,7 @@ const ClassProfile: React.FC<ClassProfileProps> = ({ classData, onEdit }) => {
             </div>
           </div>
 
+          {/* Total Subjects */}
           <div className="bg-green-50 rounded-lg p-4">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -68,6 +177,23 @@ const ClassProfile: React.FC<ClassProfileProps> = ({ classData, onEdit }) => {
               <div className="ml-4">
                 <p className="text-sm font-medium text-green-600">Total Subjects</p>
                 <p className="text-2xl font-semibold text-green-900">{subjects.length}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Class Teacher */}
+          <div className="bg-purple-50 rounded-lg p-4">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-semibold">
+                  <UserCheck className="w-5 h-5" />
+                </div>
+              </div>
+              <div className="ml-4 min-w-0 flex-1">
+                <p className="text-sm font-medium text-purple-600">Class Teacher</p>
+                <p className="text-base font-semibold text-purple-900 truncate" title={currentTeacherName || 'Not Assigned'}>
+                  {currentTeacherName || 'Not Assigned'}
+                </p>
               </div>
             </div>
           </div>
@@ -147,8 +273,104 @@ const ClassProfile: React.FC<ClassProfileProps> = ({ classData, onEdit }) => {
           )}
         </div>
       </div>
+
+      {/* Assign Class Teacher Modal */}
+      {isAssignModalOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 relative">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-gray-200">
+              <div className="flex items-center space-x-2">
+                <UserCheck className="w-5 h-5 text-blue-600" />
+                <h3 className="text-lg font-bold text-gray-900">
+                  {currentTeacherName ? 'Change Class Teacher' : 'Assign Class Teacher'}
+                </h3>
+              </div>
+              <button
+                onClick={handleCloseAssignModal}
+                disabled={isSubmitting}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label="Close modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <form onSubmit={handleAssignSubmit} className="mt-4 space-y-4">
+              <p className="text-sm text-gray-600">
+                Select a staff member to be assigned as the class teacher for{' '}
+                <span className="font-semibold text-gray-900">{classData.name}</span>.
+              </p>
+
+              {assignError && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-700">
+                  {assignError}
+                </div>
+              )}
+
+              <div>
+                <label htmlFor="staffSelect" className="block text-sm font-medium text-gray-700 mb-1">
+                  Select Staff Member *
+                </label>
+
+                {isLoadingStaff ? (
+                  <div className="flex items-center justify-center py-6 text-sm text-gray-500 bg-gray-50 rounded-md border border-gray-200">
+                    <Loader2 className="w-5 h-5 animate-spin mr-2 text-blue-600" />
+                    Loading staff directory...
+                  </div>
+                ) : (
+                  <select
+                    id="staffSelect"
+                    value={selectedStaffId}
+                    onChange={(e) => setSelectedStaffId(e.target.value)}
+                    disabled={isSubmitting}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm"
+                  >
+                    <option value="">-- Choose a teacher --</option>
+                    {staffList.map((staff) => (
+                      <option key={staff.id} value={staff.id}>
+                        {staff.fullName} {staff.email ? `(${staff.email})` : ''}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+
+              {/* Modal Actions */}
+              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200 mt-6">
+                <button
+                  type="button"
+                  onClick={handleCloseAssignModal}
+                  disabled={isSubmitting}
+                  className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting || isLoadingStaff || !selectedStaffId}
+                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : currentTeacherName ? (
+                    'Update Teacher'
+                  ) : (
+                    'Assign Teacher'
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default ClassProfile;
+
