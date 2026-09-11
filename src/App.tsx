@@ -13,6 +13,7 @@ import ResourceTypeManagement from './pages/resource-type/ResourceTypeManagement
 import TimetableTypeManagement from './pages/timetable-type/TimetableTypeManagement'
 import TimetableManagement from './pages/timetable/TimetableManagement'
 import PaymentPage from './pages/payment'
+import PaymentSettings from './pages/payment/PaymentSettings'
 import PaymentTypeManagement from './pages/payment-type'
 import PaymentVerification from './pages/payment-verification'
 import SystemConfigManagement from './pages/system-config'
@@ -61,6 +62,7 @@ function AppContent() {
             <Route path="/timetable-type" element={<TimetableTypeManagement />} />
             <Route path="/timetable" element={<TimetableManagement />} />
             <Route path="/payment" element={<PaymentPage />} />
+            <Route path="/payment-settings" element={<PaymentSettings />} />
             <Route path="/payment-type" element={<PaymentTypeManagement />} />
             <Route path="/payment-verification" element={<PaymentVerification />} />
             <Route path="/system-config" element={<SystemConfigManagement />} />
