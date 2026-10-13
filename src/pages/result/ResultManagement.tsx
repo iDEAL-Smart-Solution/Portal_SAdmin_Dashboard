@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import ResultList from './ResultList';
+import ResultApproval from './ResultApproval';
 import UploadResult from './UploadResult';
 import BulkUploadResult from './BulkUploadResult';
 
-type ResultView = 'list' | 'upload' | 'bulk-upload';
+type ResultView = 'list' | 'upload' | 'bulk-upload' | 'approvals';
 
 interface ResultManagementProps {
   onBack?: () => void;
@@ -18,6 +19,10 @@ const ResultManagement: React.FC<ResultManagementProps> = () => {
 
   const handleBulkUpload = () => {
     setCurrentView('bulk-upload');
+  };
+
+  const handleOpenApprovals = () => {
+    setCurrentView('approvals');
   };
 
   const handleBackToList = () => {
@@ -35,6 +40,14 @@ const ResultManagement: React.FC<ResultManagementProps> = () => {
           <ResultList
             onUploadResult={handleUploadResult}
             onBulkUpload={handleBulkUpload}
+            onOpenApprovals={handleOpenApprovals}
+          />
+        );
+
+      case 'approvals':
+        return (
+          <ResultApproval
+            onBack={handleBackToList}
           />
         );
       
@@ -59,6 +72,7 @@ const ResultManagement: React.FC<ResultManagementProps> = () => {
           <ResultList
             onUploadResult={handleUploadResult}
             onBulkUpload={handleBulkUpload}
+            onOpenApprovals={handleOpenApprovals}
           />
         );
     }
