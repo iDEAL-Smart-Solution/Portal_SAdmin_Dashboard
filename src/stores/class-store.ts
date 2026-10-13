@@ -19,6 +19,7 @@ interface ClassState {
   fetchClassById: (id: string) => Promise<void>;
   createClass: (classData: CreateClassRequest) => Promise<void>;
   updateClass: (id: string, classData: UpdateClassRequest) => Promise<void>;
+  assignClassTeacher: (classId: string, staffId: string) => Promise<boolean>;
   deleteClass: (id: string) => Promise<void>;
   clearError: () => void;
   clearSelectedClass: () => void;
@@ -65,6 +66,8 @@ export const useClassStore = create<ClassState>((set, get) => ({
       // Frontend expects plural: 'students', 'subjects'
       const normalizedData = {
         ...classData,
+        classTeacherId: classData.classTeacherId || classData.teacherId || classData.classTeacher?.id,
+        classTeacherName: classData.classTeacherName || classData.teacherName || classData.classTeacher?.fullName || classData.classTeacher?.name,
         students: Array.isArray(classData.students) 
           ? classData.students 
           : Array.isArray(classData.student) 
@@ -122,6 +125,29 @@ export const useClassStore = create<ClassState>((set, get) => ({
                           error.message || 
                           'Failed to update class';
       set({ error: errorMessage, isLoading: false });
+    }
+  },
+
+  assignClassTeacher: async (classId: string, staffId: string) => {
+    set({ isLoading: true, error: null });
+    try {
+      await axiosInstance.put('/Class/assign-class-teacher', {
+        classId,
+        staffId
+      });
+      
+      // Refresh both class details and class list directly from the backend
+      await get().fetchClassById(classId);
+      await get().fetchClassList();
+      set({ isLoading: false });
+      return true;
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.details || 
+                          error.response?.data?.message || 
+                          error.message || 
+                          'Failed to assign class teacher';
+      set({ error: errorMessage, isLoading: false });
+      throw error;
     }
   },
 
