@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useResultStore, CreateResultRequest } from '../../stores/result-store';
 import { useClassStore } from '../../stores/class-store';
-import { showError, showSuccess } from '../../lib/notifications';
+import { showError, showSuccess, showWarning } from '../../lib/notifications';
 
 interface BulkUploadResultProps {
   onBack: () => void;
@@ -18,6 +18,8 @@ const BulkUploadResult: React.FC<BulkUploadResultProps> = ({ onBack, onSuccess }
     fetchSubjects,
     fetchCurrentSession,
     createResult,
+    uploadResultsExcel,
+    downloadResultsExcelTemplate,
     clearStudents,
     isLoading,
     error,
@@ -30,6 +32,10 @@ const BulkUploadResult: React.FC<BulkUploadResultProps> = ({ onBack, onSuccess }
   const [selectedSubject, setSelectedSubject] = useState('');
   const [selectedTerm, setSelectedTerm] = useState<number>(1);
   const [uploadProgress, setUploadProgress] = useState<{ current: number; total: number } | null>(null);
+  const [excelFile, setExcelFile] = useState<File | null>(null);
+  const [overwriteExisting, setOverwriteExisting] = useState(false);
+  const [templateDownloading, setTemplateDownloading] = useState(false);
+  const [importSummary, setImportSummary] = useState<{ totalRows: number; successCount: number; failCount: number; errors: Array<{ rowNumber: number; studentUin: string; error: string }> } | null>(null);
 
   // Bulk scores state
   const [bulkScores, setBulkScores] = useState<Record<string, {
@@ -177,6 +183,58 @@ const BulkUploadResult: React.FC<BulkUploadResultProps> = ({ onBack, onSuccess }
     setBulkScores(clearedScores);
   };
 
+  const handleDownloadTemplate = async () => {
+    try {
+      setTemplateDownloading(true);
+      const blob = await downloadResultsExcelTemplate();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'results-upload-template.xlsx';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      showSuccess('Template downloaded successfully');
+    } catch (err: any) {
+      showError(err.message || 'Failed to download template');
+    } finally {
+      setTemplateDownloading(false);
+    }
+  };
+
+  const handleExcelUpload = async () => {
+    if (!excelFile) return showError('Please select an Excel file');
+    if (!selectedSubject) return showError('Please select a subject');
+    if (!currentSession?.name) return showError('Current academic session is not available');
+
+    const formData = new FormData();
+    formData.append('file', excelFile);
+    formData.append('subjectId', selectedSubject);
+    formData.append('term', selectedTerm.toString());
+    formData.append('session', currentSession.name);
+    formData.append('overwriteExisting', overwriteExisting ? 'true' : 'false');
+
+    try {
+      const response = await uploadResultsExcel(formData);
+      const payload = response?.data ?? response;
+      const summary = {
+        totalRows: Number(payload.totalRows ?? payload.TotalRows ?? 0),
+        successCount: Number(payload.successCount ?? payload.SuccessCount ?? 0),
+        failCount: Number(payload.failCount ?? payload.FailCount ?? 0),
+        errors: payload.errors ?? payload.Errors ?? [],
+      };
+      setImportSummary(summary);
+      if (summary.successCount > 0) {
+        showSuccess(`Imported ${summary.successCount} result${summary.successCount === 1 ? '' : 's'}`);
+      }
+      if (summary.failCount > 0) showWarning(`${summary.failCount} row${summary.failCount === 1 ? '' : 's'} failed. Review the row details below.`);
+      if (summary.successCount === 0 && summary.failCount === 0) showWarning('The file did not contain any result rows.');
+    } catch (err: any) {
+      showError(err.message || 'Failed to upload Excel results');
+    }
+  };
+
   return (
     <div className="p-6">
       {/* Header */}
@@ -195,6 +253,36 @@ const BulkUploadResult: React.FC<BulkUploadResultProps> = ({ onBack, onSuccess }
           Enter results for multiple students at once
         </p>
       </div>
+
+      <section className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">Import Results from Excel</h2>
+            <p className="mt-1 text-sm text-gray-600">Use the template with StudentUIN, FirstCA, SecondCA, ThirdCA and Exam columns. CA scores are out of 10 and Exam is out of 70.</p>
+          </div>
+          <button type="button" onClick={handleDownloadTemplate} disabled={templateDownloading} className="shrink-0 rounded-lg border border-blue-300 bg-white px-4 py-2 text-sm font-medium text-blue-700 hover:bg-blue-100 disabled:opacity-50">
+            {templateDownloading ? 'Downloading...' : 'Download Excel Template'}
+          </button>
+        </div>
+        <div className="mt-5 grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
+          <div>
+            <label htmlFor="result-excel-file" className="mb-1 block text-sm font-medium text-gray-700">Excel file (.xlsx)</label>
+            <input id="result-excel-file" type="file" accept=".xlsx" onChange={(event) => { setExcelFile(event.target.files?.[0] ?? null); setImportSummary(null); }} className="block w-full rounded-lg border border-gray-300 bg-white p-2 text-sm" />
+            {excelFile && <p className="mt-1 text-xs text-gray-600">{excelFile.name} ({(excelFile.size / 1024).toFixed(1)} KB)</p>}
+          </div>
+          <button type="button" onClick={handleExcelUpload} disabled={!excelFile || isLoading} className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50">
+            {isLoading ? 'Uploading...' : 'Upload Results'}
+          </button>
+        </div>
+        <label className="mt-4 inline-flex items-center gap-2 text-sm text-gray-700">
+          <input type="checkbox" checked={overwriteExisting} onChange={(event) => setOverwriteExisting(event.target.checked)} className="rounded border-gray-300" />
+          Overwrite existing results (approved results cannot be changed)
+        </label>
+        {importSummary && <div className="mt-4 rounded-lg border border-gray-200 bg-white p-4">
+          <p className="text-sm font-medium text-gray-900">Processed {importSummary.totalRows} rows: {importSummary.successCount} imported, {importSummary.failCount} failed.</p>
+          {importSummary.errors.length > 0 && <div className="mt-3 max-h-48 overflow-auto"><table className="min-w-full text-left text-xs"><thead><tr className="border-b text-gray-500"><th className="py-2 pr-3">Row</th><th className="py-2 pr-3">Student UIN</th><th className="py-2">Issue</th></tr></thead><tbody>{importSummary.errors.map((item, index) => <tr key={`${item.rowNumber}-${index}`} className="border-b last:border-0"><td className="py-2 pr-3">{item.rowNumber}</td><td className="py-2 pr-3">{item.studentUin}</td><td className="py-2">{item.error}</td></tr>)}</tbody></table></div>}
+        </div>}
+      </section>
 
       {/* Upload Progress */}
       {uploadProgress && (

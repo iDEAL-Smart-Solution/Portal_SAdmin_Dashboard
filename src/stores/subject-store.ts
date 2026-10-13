@@ -218,6 +218,7 @@ export const useSubjectStore = create<SubjectState>((set, get) => ({
                           error.message || 
                           'Failed to update subject';
       set({ error: errorMessage, isLoading: false });
+      throw new Error(errorMessage);
     }
   },
 

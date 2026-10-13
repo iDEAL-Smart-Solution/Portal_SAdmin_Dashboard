@@ -106,6 +106,8 @@ interface ResultStore extends ResultState {
   createResult: (data: CreateResultRequest) => Promise<void>;
   updateResult: (data: UpdateResultRequest) => Promise<void>;
   deleteResult: (id: string) => Promise<void>;
+  uploadResultsExcel: (formData: FormData) => Promise<any>;
+  downloadResultsExcelTemplate: () => Promise<Blob>;
   
   // Utility
   clearError: () => void;
@@ -328,6 +330,32 @@ export const useResultStore = create<ResultStore>((set, get) => ({
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || 'Failed to delete result';
       set({ error: errorMessage, isLoading: false });
+      throw new Error(errorMessage);
+    }
+  },
+
+  uploadResultsExcel: async (formData: FormData) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await axiosInstance.post('/Results/import-excel', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      set({ isLoading: false });
+      return response.data;
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Failed to upload Excel results';
+      set({ error: errorMessage, isLoading: false });
+      throw new Error(errorMessage);
+    }
+  },
+
+  downloadResultsExcelTemplate: async () => {
+    try {
+      const response = await axiosInstance.get('/Results/excel-template', { responseType: 'blob' });
+      return response.data as Blob;
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Failed to download results template';
+      set({ error: errorMessage });
       throw new Error(errorMessage);
     }
   },
