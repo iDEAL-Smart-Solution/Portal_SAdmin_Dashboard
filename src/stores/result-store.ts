@@ -6,6 +6,7 @@ export interface ResultResponse {
   id: string;
   studentId: string;
   studentUin: string;
+  studentName?: string;
   subjectCode: string;
   first_CA_Score: number;
   second_CA_Score: number;
@@ -15,6 +16,29 @@ export interface ResultResponse {
   term: number;
   session: string;
 }
+
+const normalizeResultRecord = (item: any): ResultResponse => {
+  const firstCa = Number(item.firstCA ?? item.first_CA_Score ?? item.firstCaScore ?? 0);
+  const secondCa = Number(item.secondCA ?? item.second_CA_Score ?? item.secondCaScore ?? 0);
+  const thirdCa = Number(item.thirdCA ?? item.third_CA_Score ?? item.thirdCaScore ?? 0);
+  const examScore = Number(item.exam ?? item.exam_Score ?? item.examScore ?? 0);
+  const totalScore = Number(item.totalScore ?? item.total_Score ?? item.total ?? 0);
+
+  return {
+    id: item.id ?? item.resultId ?? '',
+    studentId: item.studentId ?? item.student_id ?? '',
+    studentUin: item.studentUin ?? item.studentUIN ?? item.student_uin ?? item.studentId ?? '',
+    studentName: item.studentName ?? item.fullName ?? item.student_name ?? '',
+    subjectCode: item.subjectCode ?? item.subject_code ?? item.subject?.code ?? '',
+    first_CA_Score: firstCa,
+    second_CA_Score: secondCa,
+    third_CA_Score: thirdCa,
+    exam_Score: examScore,
+    total_Score: totalScore,
+    term: Number(item.term ?? 0),
+    session: item.session ?? item.academicSession ?? '',
+  };
+};
 
 export interface CreateResultRequest {
   studentId: string;
@@ -106,7 +130,8 @@ export const useResultStore = create<ResultStore>((set, get) => ({
     try {
       const response = await axiosInstance.get('/Results');
       const data = response.data.data || response.data || [];
-      set({ results: Array.isArray(data) ? data : [], isLoading: false });
+      const normalizedResults = Array.isArray(data) ? data.map(normalizeResultRecord) : [];
+      set({ results: normalizedResults, isLoading: false });
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || 'Failed to fetch results';
       set({ error: errorMessage, isLoading: false });

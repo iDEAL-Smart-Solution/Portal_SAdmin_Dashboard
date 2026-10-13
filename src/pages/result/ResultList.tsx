@@ -4,10 +4,11 @@
   interface ResultListProps {
     onUploadResult: () => void;
     onBulkUpload: () => void;
+    onOpenApprovals: () => void;
   }
 
 
-  const ResultList: React.FC<ResultListProps> = ({ onUploadResult, onBulkUpload }) => {
+  const ResultList: React.FC<ResultListProps> = ({ onUploadResult, onBulkUpload, onOpenApprovals }) => {
   const { results, fetchAllResults, deleteResult, isLoading, error } = useResultStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterTerm, setFilterTerm] = useState<string>('');
@@ -24,8 +25,10 @@
 
   // Filtered results based on search and filters
   const filteredResults = (results || []).filter(result => {
+    const studentName = result.studentName || result.studentUin || '';
     const matchesSearch =
       searchTerm === '' ||
+      studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       result.studentUin?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       result.subjectCode?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesTerm = filterTerm === '' || String(result.term) === filterTerm;
@@ -78,7 +81,16 @@
           <h1 className="text-2xl font-bold text-gray-900">Results</h1>
           <p className="text-sm text-gray-500">Manage uploaded student results</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={onOpenApprovals}
+            className="inline-flex items-center px-4 py-2 border border-orange-300 rounded-lg shadow-sm text-sm font-medium text-orange-700 bg-white hover:bg-orange-50"
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Result Approvals
+          </button>
           <button
             onClick={onUploadResult}
             className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700"
@@ -222,6 +234,9 @@
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Student
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Student ID
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -255,9 +270,18 @@
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredResults.map((result) => {
-                  const grade = getGrade(result.total_Score);
+                  const studentName = result.studentName || result.studentUin || 'Unknown student';
+                  const total = Number(result.total_Score ?? 0);
+                  const firstCa = Number(result.first_CA_Score ?? 0);
+                  const secondCa = Number(result.second_CA_Score ?? 0);
+                  const thirdCa = Number(result.third_CA_Score ?? 0);
+                  const examScore = Number(result.exam_Score ?? 0);
+                  const grade = getGrade(total);
                   return (
                     <tr key={result.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">{studentName}</div>
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="font-mono text-sm text-gray-900">{result.studentUin}</span>
                       </td>
@@ -265,19 +289,19 @@
                         <span className="text-sm font-medium text-gray-900">{result.subjectCode}</span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <span className="text-sm text-gray-600">{result.first_CA_Score}</span>
+                        <span className="text-sm text-gray-600">{firstCa}</span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <span className="text-sm text-gray-600">{result.second_CA_Score}</span>
+                        <span className="text-sm text-gray-600">{secondCa}</span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <span className="text-sm text-gray-600">{result.third_CA_Score}</span>
+                        <span className="text-sm text-gray-600">{thirdCa}</span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <span className="text-sm text-gray-600">{result.exam_Score}</span>
+                        <span className="text-sm text-gray-600">{examScore}</span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <span className="text-sm font-semibold text-gray-900">{result.total_Score}</span>
+                        <span className="text-sm font-semibold text-gray-900">{total}</span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getGradeColor(grade)}`}>
