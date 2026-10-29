@@ -281,6 +281,11 @@ function SystemConfigModal({ isOpen, editingConfig, onClose, onSuccess }: any) {
               rows={3}
               required
             />
+            {formData.key.trim().toLowerCase() === 'scoreshare' && (
+              <p className="mt-1 text-xs text-text-tertiary">
+                Enter CA and exam shares separated by a comma, for example <code>30,70</code>. The two values must total 100; the CA share is divided equally across the three CA scores.
+              </p>
+            )}
           </div>
 
           <div>

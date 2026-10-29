@@ -3,7 +3,6 @@ import ResultList from './ResultList';
 import ResultApproval from './ResultApproval';
 import UploadResult from './UploadResult';
 import BulkUploadResult from './BulkUploadResult';
-import ResultApprovalsView from './ResultApprovalsView';
 
 type ResultView = 'list' | 'approvals' | 'upload' | 'bulk-upload';
 
@@ -50,11 +49,6 @@ const ResultManagement: React.FC<ResultManagementProps> = () => {
           <ResultApproval
             onBack={handleBackToList}
           />
-        );
-
-      case 'approvals':
-        return (
-          <ResultApprovalsView />
         );
 
       case 'upload':
