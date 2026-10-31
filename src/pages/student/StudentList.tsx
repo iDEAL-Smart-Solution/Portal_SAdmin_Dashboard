@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Eye, Edit3 } from 'lucide-react';
+import { Eye, Edit3, Printer } from 'lucide-react';
 import { useStudentStore } from '../../stores/student-store';
+import type { GetManyStudentResponse } from '../../types/student';
+import StudentReportCardPrintDialog from '../../components/student/StudentReportCardPrintDialog';
 import { FileBaseUrl } from '../../lib/axios';
 
 interface StudentListProps {
@@ -16,6 +18,7 @@ const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent,
   const [sortBy, setSortBy] = useState<'name' | 'uin' | 'email'>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [reportCardStudent, setReportCardStudent] = useState<GetManyStudentResponse | null>(null);
 
   useEffect(() => {
     fetchStudentList();
@@ -449,6 +452,14 @@ const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent,
                         >
                           <Edit3 className="w-4 h-4" />
                         </button>
+                        <button
+                          onClick={() => setReportCardStudent(student)}
+                          className="inline-flex items-center p-1 text-emerald-600 hover:text-emerald-700"
+                          title="Print Report Card"
+                          aria-label={`Print report card for ${student.fullName}`}
+                        >
+                          <Printer className="w-4 h-4" />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -458,6 +469,7 @@ const StudentList: React.FC<StudentListProps> = ({ onViewProfile, onEditStudent,
           </div>
         </div>
       )}
+      <StudentReportCardPrintDialog student={reportCardStudent} onClose={() => setReportCardStudent(null)} />
     </div>
   );
 };

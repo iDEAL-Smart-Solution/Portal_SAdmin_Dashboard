@@ -46,6 +46,10 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({ onSidebarToggle }) => {
       title: "Result Management",
       icon: <FileText className="h-5 w-5 text-primary-500" />,
     },
+    'report-cards': {
+      title: "Report Cards",
+      icon: <FileText className="h-5 w-5 text-primary-500" />,
+    },
     'remark-templates': {
       title: "Remark Templates",
       icon: <ClipboardCheck className="h-5 w-5 text-primary-500" />,

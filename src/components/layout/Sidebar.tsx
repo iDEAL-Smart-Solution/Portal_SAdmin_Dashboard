@@ -141,6 +141,17 @@ const Sidebar: React.FC<SidebarProps> = ({ onModuleChange }) => {
       disabled: false
     },
     {
+      id: 'report-cards',
+      name: 'Report Cards',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 011.414.414l5.586 5.586A2 2 0 0120 10.414V19a2 2 0 01-2 2z" />
+        </svg>
+      ),
+      description: 'Print student report cards individually or by class',
+      disabled: false
+    },
+    {
       id: 'remark-templates',
       name: 'Remark Templates',
       icon: (

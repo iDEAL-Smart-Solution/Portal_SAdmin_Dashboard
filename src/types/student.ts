@@ -69,6 +69,7 @@ export interface GetSingleStudentResponse {
 
 export interface GetManyStudentResponse {
   id: string;
+  userId: string;
   fullName: string;
   email: string;
   className: string;

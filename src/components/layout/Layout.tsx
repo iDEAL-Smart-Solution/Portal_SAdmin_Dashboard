@@ -10,6 +10,7 @@ import {
   Layers,
   BookMarked,
   MessageSquare,
+  FileText,
 } from "lucide-react";
 
 interface LayoutProps {
@@ -58,6 +59,11 @@ const Layout: React.FC<LayoutProps> = ({
       title: "Result Management",
       desc: "Manage student results and performance records",
       icon: <GraduationCap className="h-6 w-6 text-primary-500" />,
+    },
+    'report-cards': {
+      title: "Report Cards",
+      desc: "Print individual or class report cards",
+      icon: <FileText className="h-6 w-6 text-primary-500" />,
     },
     'resource-type': {
       title: "Resource Type Management",
