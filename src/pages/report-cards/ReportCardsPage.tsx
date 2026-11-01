@@ -139,10 +139,23 @@ function makeZip(files: { name: string; content: Uint8Array }[]) {
 }
 
 async function renderReportPdf(html: string) {
-  await Promise.all([
+  const [pdfModule, canvasModule] = await Promise.all([
     import('../../vendor/pdf/jspdf.umd.min.js'),
     import('../../vendor/pdf/html2canvas.min.js'),
   ]);
+  const pdfExports = pdfModule as any;
+  const canvasExports = canvasModule as any;
+  const JsPdfConstructor = window.jspdf?.jsPDF
+    ?? pdfExports.jsPDF
+    ?? pdfExports.default?.jsPDF
+    ?? pdfExports.default;
+  const html2canvas = window.html2canvas
+    ?? canvasExports.html2canvas
+    ?? canvasExports.default;
+  if (typeof JsPdfConstructor !== 'function' || typeof html2canvas !== 'function') {
+    throw new Error('The PDF tools could not be loaded. Please refresh and try again.');
+  }
+
   const frame = document.createElement('iframe');
   frame.style.cssText = 'position:fixed;left:-12000px;top:0;width:794px;height:1122px;border:0;visibility:hidden';
   document.body.appendChild(frame);
@@ -157,11 +170,11 @@ async function renderReportPdf(html: string) {
     if (!doc || !page || !frame.contentWindow) throw new Error('The report card page could not be rendered.');
     await Promise.all(Array.from(doc.images).map((image) => image.decode().catch(() => undefined)));
     await doc.fonts?.ready;
-    const canvas = await window.html2canvas(page, {
+    const canvas = await html2canvas(page, {
       backgroundColor: '#ffffff', scale: 1, useCORS: true, logging: false,
       windowWidth: 794, windowHeight: 1122,
     });
-    const pdf = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pdf = new JsPdfConstructor({ orientation: 'portrait', unit: 'mm', format: 'a4' });
     pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, 210, 297);
     return pdf.output('blob');
   } finally {

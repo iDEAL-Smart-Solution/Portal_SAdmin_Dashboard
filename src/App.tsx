@@ -23,12 +23,35 @@ import PerformancePage from './pages/performance/PerformancePage'
 import RemarkTemplateManagement from './pages/remark-templates/RemarkTemplateManagement'
 import { Toaster } from 'sonner'
 import { ThemeBootstrap } from './components/ThemeBootstrap.tsx'
+import { FileBaseUrl } from './lib/axios'
 
 const isSchoolAdminRole = (role?: string) => role?.trim().toLowerCase() === 'admin'
 
 function AppContent() {
-  const { isAuthenticated, user, isAdmin, error } = useAuthStore()
+  const { isAuthenticated, user, schoolInfo, isAdmin, error } = useAuthStore()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!schoolInfo?.name && !schoolInfo?.logo) return
+
+    if (schoolInfo.name) document.title = schoolInfo.name
+
+    let icon = document.querySelector<HTMLLinkElement>('link[rel~="icon"]')
+    if (!icon) {
+      icon = document.createElement('link')
+      icon.rel = 'icon'
+      document.head.appendChild(icon)
+    }
+
+    if (!schoolInfo.logo) {
+      icon.href = '/logo.png'
+    } else if (/^https?:\/\//i.test(schoolInfo.logo)) {
+      icon.href = schoolInfo.logo
+    } else {
+      const normalizedPath = schoolInfo.logo.startsWith('/') ? schoolInfo.logo : `/${schoolInfo.logo}`
+      icon.href = `${FileBaseUrl}${normalizedPath}`
+    }
+  }, [schoolInfo?.name, schoolInfo?.logo])
 
   useEffect(() => {
     if (isAuthenticated && user && !isAdmin()) {

@@ -64,6 +64,15 @@ export default function SystemConfigManagement() {
 
       <AdminPrincipalSignature />
 
+      <div className="rounded-lg border border-blue-200 bg-blue-50 p-4" role="note" aria-label="CA and exam score configuration instructions">
+        <h2 className="font-semibold text-blue-900">CA and Exam score configuration</h2>
+        <p className="mt-1 text-sm text-blue-800">
+          To set your school’s Continuous Assessment (CA) and exam weighting, use the exact configuration key <code className="rounded bg-white px-1.5 py-0.5 font-mono">ScoreShare</code>.
+          Enter the CA share first and the exam share second, separated by a comma (for example, <code className="rounded bg-white px-1.5 py-0.5 font-mono">30,70</code>).
+          The two values must add up to 100. The CA share is split equally across the three CA scores, and the exam share sets the exam’s maximum contribution to the result total.
+        </p>
+      </div>
+
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <p className="text-red-600">{error}</p>

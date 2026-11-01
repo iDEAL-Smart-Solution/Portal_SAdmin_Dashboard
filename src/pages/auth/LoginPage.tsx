@@ -71,6 +71,21 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
     };
   }, [currentDomain]);
 
+  useEffect(() => {
+    const schoolName = schoolBrand?.schoolName || 'School Admin Dashboard';
+    document.title = schoolName;
+
+    let icon = document.querySelector<HTMLLinkElement>('link[rel~="icon"]');
+    if (!icon) {
+      icon = document.createElement('link');
+      icon.rel = 'icon';
+      document.head.appendChild(icon);
+    }
+    icon.href = schoolBrand?.schoolLogoFilePath
+      ? resolveMediaUrl(schoolBrand.schoolLogoFilePath)
+      : '/logo.png';
+  }, [schoolBrand?.schoolName, schoolBrand?.schoolLogoFilePath]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearError();
